@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
 
+//TODO Add [Comment]
+
 namespace STAREvents.Data.Models
 {
     public class Event
@@ -25,7 +27,8 @@ namespace STAREvents.Data.Models
         [MaxLength(MaxDescriptionLength)]
         [MinLength(MinDescriptionLength)]
         public string Description { get; set; } = null!;
-
+        [MaxLength(MaxImgUrlLength)]
+        public string ImageUrl { get; set; } = string.Empty;
         [Required]
         public DateTime Date { get; set; }
 

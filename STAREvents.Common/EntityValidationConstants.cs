@@ -14,6 +14,7 @@ namespace STAREvents.Common
             public const int MinNameLength = 3;
             public const int MaxDescriptionLength = 1000;
             public const int MinDescriptionLength = 30;
+            public const int MaxImgUrlLength = 2048;
             public const string DecimalType = "decimal(18,2)";
         }
 
@@ -48,6 +49,7 @@ namespace STAREvents.Common
             public const int MinFirstNameLength = 3;
             public const int MaxLastNameLength = 100;
             public const int MinLastNameLength = 3;
+            public const int MaxImgUrlLength = 2048;
         }
     }
 }

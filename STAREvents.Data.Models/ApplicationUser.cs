@@ -24,6 +24,8 @@ namespace STAREvents.Data.Models
         [MaxLength(MaxLastNameLength)]
         [MinLength(MinLastNameLength)]
         public string LastName { get; set; } = null!;
+        [MaxLength(MaxImgUrlLength)]
+        public string ImageUrl { get; set; } = string.Empty;
 
         public ICollection<Ticket> Tickets { get; set; }
             = new HashSet<Ticket>();

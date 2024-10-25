@@ -11,7 +11,7 @@ using STAREvents.Web.Data;
 
 namespace STAREvents.Web.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(STAREventsDbContext))]
     [Migration("20241024140753_Initial")]
     partial class Initial
     {

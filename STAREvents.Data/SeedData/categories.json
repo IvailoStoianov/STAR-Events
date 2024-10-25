@@ -1,0 +1,122 @@
+[
+  {
+    "CategoryID": 1,
+    "Name": "Music"
+  },
+  {
+    "CategoryID": 2,
+    "Name": "Sports"
+  },
+  {
+    "CategoryID": 3,
+    "Name": "Technology"
+  },
+  {
+    "CategoryID": 4,
+    "Name": "Education"
+  },
+  {
+    "CategoryID": 5,
+    "Name": "Health"
+  },
+  {
+    "CategoryID": 6,
+    "Name": "Art"
+  },
+  {
+    "CategoryID": 7,
+    "Name": "Business"
+  },
+  {
+    "CategoryID": 8,
+    "Name": "Science"
+  },
+  {
+    "CategoryID": 9,
+    "Name": "Comedy"
+  },
+  {
+    "CategoryID": 10,
+    "Name": "Travel"
+  },
+  {
+    "CategoryID": 11,
+    "Name": "Lifestyle"
+  },
+  {
+    "CategoryID": 12,
+    "Name": "Fitness"
+  },
+  {
+    "CategoryID": 13,
+    "Name": "Gaming"
+  },
+  {
+    "CategoryID": 14,
+    "Name": "Cooking"
+  },
+  {
+    "CategoryID": 15,
+    "Name": "History"
+  },
+  {
+    "CategoryID": 16,
+    "Name": "Politics"
+  },
+  {
+    "CategoryID": 17,
+    "Name": "Finance"
+  },
+  {
+    "CategoryID": 18,
+    "Name": "Nature"
+  },
+  {
+    "CategoryID": 19,
+    "Name": "Photography"
+  },
+  {
+    "CategoryID": 20,
+    "Name": "Writing"
+  },
+  {
+    "CategoryID": 21,
+    "Name": "Dance"
+  },
+  {
+    "CategoryID": 22,
+    "Name": "Film"
+  },
+  {
+    "CategoryID": 23,
+    "Name": "Literature"
+  },
+  {
+    "CategoryID": 24,
+    "Name": "Environment"
+  },
+  {
+    "CategoryID": 25,
+    "Name": "Social"
+  },
+  {
+    "CategoryID": 26,
+    "Name": "Community"
+  },
+  {
+    "CategoryID": 27,
+    "Name": "Theatre"
+  },
+  {
+    "CategoryID": 28,
+    "Name": "Networking"
+  },
+  {
+    "CategoryID": 29,
+    "Name": "Charity"
+  },
+  {
+    "CategoryID": 30,
+    "Name": "Hobbies"
+  }
+]

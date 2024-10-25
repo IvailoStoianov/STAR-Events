@@ -1,0 +1,152 @@
+[
+  {
+    "OrganizerID": 1,
+    "Name": "John Doe",
+    "ContactInfo": "john.doe@example.com"
+  },
+  {
+    "OrganizerID": 2,
+    "Name": "Jane Smith",
+    "ContactInfo": "jane.smith@example.com"
+  },
+  {
+    "OrganizerID": 3,
+    "Name": "Emily Johnson",
+    "ContactInfo": "emily.johnson@example.com"
+  },
+  {
+    "OrganizerID": 4,
+    "Name": "Michael Brown",
+    "ContactInfo": "michael.brown@example.com"
+  },
+  {
+    "OrganizerID": 5,
+    "Name": "Sarah Wilson",
+    "ContactInfo": "sarah.wilson@example.com"
+  },
+  {
+    "OrganizerID": 6,
+    "Name": "David Martinez",
+    "ContactInfo": "david.martinez@example.com"
+  },
+  {
+    "OrganizerID": 7,
+    "Name": "Chris Lee",
+    "ContactInfo": "chris.lee@example.com"
+  },
+  {
+    "OrganizerID": 8,
+    "Name": "Jessica White",
+    "ContactInfo": "jessica.white@example.com"
+  },
+  {
+    "OrganizerID": 9,
+    "Name": "Daniel Harris",
+    "ContactInfo": "daniel.harris@example.com"
+  },
+  {
+    "OrganizerID": 10,
+    "Name": "Laura Thompson",
+    "ContactInfo": "laura.thompson@example.com"
+  },
+  {
+    "OrganizerID": 11,
+    "Name": "Tom Clark",
+    "ContactInfo": "tom.clark@example.com"
+  },
+  {
+    "OrganizerID": 12,
+    "Name": "Anna Lewis",
+    "ContactInfo": "anna.lewis@example.com"
+  },
+  {
+    "OrganizerID": 13,
+    "Name": "Robert Walker",
+    "ContactInfo": "robert.walker@example.com"
+  },
+  {
+    "OrganizerID": 14,
+    "Name": "Lisa Hall",
+    "ContactInfo": "lisa.hall@example.com"
+  },
+  {
+    "OrganizerID": 15,
+    "Name": "Mark Allen",
+    "ContactInfo": "mark.allen@example.com"
+  },
+  {
+    "OrganizerID": 16,
+    "Name": "Sophie Young",
+    "ContactInfo": "sophie.young@example.com"
+  },
+  {
+    "OrganizerID": 17,
+    "Name": "James Hernandez",
+    "ContactInfo": "james.hernandez@example.com"
+  },
+  {
+    "OrganizerID": 18,
+    "Name": "Emma King",
+    "ContactInfo": "emma.king@example.com"
+  },
+  {
+    "OrganizerID": 19,
+    "Name": "Brian Wright",
+    "ContactInfo": "brian.wright@example.com"
+  },
+  {
+    "OrganizerID": 20,
+    "Name": "Olivia Scott",
+    "ContactInfo": "olivia.scott@example.com"
+  },
+  {
+    "OrganizerID": 21,
+    "Name": "Kevin Green",
+    "ContactInfo": "kevin.green@example.com"
+  },
+  {
+    "OrganizerID": 22,
+    "Name": "Evelyn Adams",
+    "ContactInfo": "evelyn.adams@example.com"
+  },
+  {
+    "OrganizerID": 23,
+    "Name": "Jason Baker",
+    "ContactInfo": "jason.baker@example.com"
+  },
+  {
+    "OrganizerID": 24,
+    "Name": "Isabella Nelson",
+    "ContactInfo": "isabella.nelson@example.com"
+  },
+  {
+    "OrganizerID": 25,
+    "Name": "Ryan Carter",
+    "ContactInfo": "ryan.carter@example.com"
+  },
+  {
+    "OrganizerID": 26,
+    "Name": "Grace Mitchell",
+    "ContactInfo": "grace.mitchell@example.com"
+  },
+  {
+    "OrganizerID": 27,
+    "Name": "Ethan Perez",
+    "ContactInfo": "ethan.perez@example.com"
+  },
+  {
+    "OrganizerID": 28,
+    "Name": "Charlotte Roberts",
+    "ContactInfo": "charlotte.roberts@example.com"
+  },
+  {
+    "OrganizerID": 29,
+    "Name": "Henry Turner",
+    "ContactInfo": "henry.turner@example.com"
+  },
+  {
+    "OrganizerID": 30,
+    "Name": "Sofia Phillips",
+    "ContactInfo": "sofia.phillips@example.com"
+  }
+]
