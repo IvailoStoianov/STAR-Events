@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web", "STAREvents.Web\STAREvents.Web.csproj", "{B8236ADD-044E-4E54-BCB0-D00D4B08B9B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAREvents.Web", "STAREvents.Web\STAREvents.Web.csproj", "{B8236ADD-044E-4E54-BCB0-D00D4B08B9B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Data", "STAREvents.Data\STAREvents.Data.csproj", "{13627BB2-8FD4-4E72-A08E-5AC395388852}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAREvents.Data", "STAREvents.Data\STAREvents.Data.csproj", "{13627BB2-8FD4-4E72-A08E-5AC395388852}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Services", "STAREvents.Services\STAREvents.Services.csproj", "{B3B3BD7A-0E0A-4275-92BD-1E692C22FDF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAREvents.Services.Data", "STAREvents.Services\STAREvents.Services.Data.csproj", "{B3B3BD7A-0E0A-4275-92BD-1E692C22FDF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Common", "STAREvents.Common\STAREvents.Common.csproj", "{AC304947-AE0B-4B24-A05B-3470CCDCD717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAREvents.Common", "STAREvents.Common\STAREvents.Common.csproj", "{AC304947-AE0B-4B24-A05B-3470CCDCD717}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{72644802-8C0A-473E-B771-5C5903E87E54}"
 EndProject
@@ -19,7 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2E89610A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{6BC77376-CEED-417F-AD0C-45D1A53562CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Data.Models", "STAREvents.Data.Models\STAREvents.Data.Models.csproj", "{747340B9-C891-4DF1-9727-5070CDDA6EFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAREvents.Data.Models", "STAREvents.Data.Models\STAREvents.Data.Models.csproj", "{747340B9-C891-4DF1-9727-5070CDDA6EFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Services.Mapping", "STAREvents.Services.Mapping\STAREvents.Services.Mapping.csproj", "{3694DDCA-5055-4445-9CDF-B69C8B43862B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web.Infrastructure", "STAREvents.Web.Infrastructure\STAREvents.Web.Infrastructure.csproj", "{034D6057-A663-4740-B50D-E0B978095B55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,14 @@ Global
 		{747340B9-C891-4DF1-9727-5070CDDA6EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{747340B9-C891-4DF1-9727-5070CDDA6EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{747340B9-C891-4DF1-9727-5070CDDA6EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3694DDCA-5055-4445-9CDF-B69C8B43862B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3694DDCA-5055-4445-9CDF-B69C8B43862B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3694DDCA-5055-4445-9CDF-B69C8B43862B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3694DDCA-5055-4445-9CDF-B69C8B43862B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{034D6057-A663-4740-B50D-E0B978095B55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{034D6057-A663-4740-B50D-E0B978095B55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{034D6057-A663-4740-B50D-E0B978095B55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{034D6057-A663-4740-B50D-E0B978095B55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +68,8 @@ Global
 		{13627BB2-8FD4-4E72-A08E-5AC395388852} = {72644802-8C0A-473E-B771-5C5903E87E54}
 		{B3B3BD7A-0E0A-4275-92BD-1E692C22FDF1} = {41968515-AA15-4A30-AA9D-9AA6E29D96EC}
 		{747340B9-C891-4DF1-9727-5070CDDA6EFB} = {72644802-8C0A-473E-B771-5C5903E87E54}
+		{3694DDCA-5055-4445-9CDF-B69C8B43862B} = {41968515-AA15-4A30-AA9D-9AA6E29D96EC}
+		{034D6057-A663-4740-B50D-E0B978095B55} = {6BC77376-CEED-417F-AD0C-45D1A53562CB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C14927A-CD8E-43CD-8345-802198FCA006}

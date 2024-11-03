@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using STAREvents.Data.Models;
+using STAREvents.Services;
+using STAREvents.Services.Data.Interfaces;
+using STAREvents.Services.Mapping;
 using STAREvents.Web.Data;
+using STAREvents.Web.Infrastructure.Extensions;
+using STAREvents.Web.Models;
 
 namespace STAREvents.Web
 {
@@ -33,6 +39,13 @@ namespace STAREvents.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
+            builder.Services.RegisterUserDefinedServices(typeof(IBaseService).Assembly); //Not sure this is right
+
+            builder.Services.AddScoped<IBaseService, BaseService>(); //Not sure this is right
+
+            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

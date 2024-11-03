@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\STAREvents.Common\STAREvents.Common.csproj" />
+    <ProjectReference Include="..\STAREvents.Data.Models\STAREvents.Data.Models.csproj" />
+    <ProjectReference Include="..\STAREvents.Data\STAREvents.Data.csproj" />
+  </ItemGroup>
+
+</Project>
