@@ -13,7 +13,7 @@ namespace STAREvents.Data.Models
     {
         public ApplicationUser()
         {
-            Id = Guid.NewGuid();
+            this.Id = Guid.NewGuid();
         }
         [Required]
         [MaxLength(MaxFirstNameLength)]

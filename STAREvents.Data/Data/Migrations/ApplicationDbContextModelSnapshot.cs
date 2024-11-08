@@ -289,7 +289,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationUser");
+                    b.ToTable("ApplicationUser", (string)null);
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.Category", b =>
@@ -307,7 +307,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -516,7 +516,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasIndex("VenueID");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.EventCategory", b =>
@@ -531,7 +531,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("EventCategories");
+                    b.ToTable("EventCategories", (string)null);
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.Organizer", b =>
@@ -554,7 +554,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasKey("OrganizerID");
 
-                    b.ToTable("Organizers");
+                    b.ToTable("Organizers", (string)null);
 
                     b.HasData(
                         new
@@ -765,7 +765,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.Venue", b =>
@@ -791,7 +791,7 @@ namespace STAREvents.Web.Data.Migrations
 
                     b.HasKey("VenueID");
 
-                    b.ToTable("Venues");
+                    b.ToTable("Venues", (string)null);
 
                     b.HasData(
                         new

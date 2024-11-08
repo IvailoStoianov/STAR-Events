@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Configurations;
 using STAREvents.Data.Models;
 
 namespace STAREvents.Web.Data
 {
-    public class STAREventsDbContext : IdentityDbContext
+    public class STAREventsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public STAREventsDbContext(DbContextOptions<STAREventsDbContext> options)
             : base(options)
