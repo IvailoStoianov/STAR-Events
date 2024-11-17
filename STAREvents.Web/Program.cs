@@ -33,7 +33,8 @@ namespace STAREvents.Web
                 .AddEntityFrameworkStores<STAREventsDbContext>()
                 .AddRoles<IdentityRole<Guid>>()
                 .AddSignInManager<SignInManager<ApplicationUser>>()
-                .AddUserManager<UserManager<ApplicationUser>>();
+                .AddUserManager<UserManager<ApplicationUser>>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddControllersWithViews();
 
