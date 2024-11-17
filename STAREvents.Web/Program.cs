@@ -7,6 +7,7 @@ using STAREvents.Services.Mapping;
 using STAREvents.Web.Data;
 using STAREvents.Web.Infrastructure.Extensions;
 using STAREvents.Web.Models;
+using STAREvents.Data;
 
 namespace STAREvents.Web
 {
@@ -20,6 +21,8 @@ namespace STAREvents.Web
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<STAREventsDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services
@@ -34,7 +37,7 @@ namespace STAREvents.Web
 
             builder.Services.AddControllersWithViews();
 
-            
+
 
             builder.Services.AddRazorPages();
 
@@ -57,7 +60,7 @@ namespace STAREvents.Web
                 app.UseHsts();
             }
 
-           
+
 
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
@@ -66,6 +69,7 @@ namespace STAREvents.Web
 
             app.UseRouting();
 
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.MapControllerRoute(
