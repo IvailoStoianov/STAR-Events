@@ -29,4 +29,8 @@
     <ProjectReference Include="..\STAREvents.Web.Infrastructure\STAREvents.Web.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>
