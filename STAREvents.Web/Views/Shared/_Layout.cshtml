@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img class="logo img-fluid" src="~/images/logo-main.svg" />
@@ -42,10 +43,10 @@
         </main>
     </div>
 
-    <footer class="py-4 mt-5 fixed-bottom">
+    <footer class="py-4 mt-5 fixed-bottom box-shadow ">
         <div class="container text-center ">
             <p class="display-5 mb-3">STAREvents</p>
-            <small class="text-white-50">&copy; Copyrigth by Ivailo.All rigths reserved.</small>
+            <small class="text-white-50">&copy; Copyrigth by Ivailo. All rigths reserved.</small>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
