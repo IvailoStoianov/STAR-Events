@@ -5,8 +5,8 @@
     ViewData["Title"] = "Register";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/register.css" />
+@section Styles{
+    <link rel="stylesheet" href="~/css/register.css"/>
 }
 
 <div class="row">
@@ -17,7 +17,7 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="form-field col-md-6">
                     <div class="form-floating mb-3">
                         <label asp-for="Input.FirstName">First name</label>
                         <div class="mb-4 input-group">
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-floating mb-3">
+                    <div class="form-field form-floating mb-3">
                         <label asp-for="Input.LastName">Last name</label>
                         <div class="mb-4 input-group">
                             <span class="input-group-text">
@@ -46,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-floating mb-3">
+            <div class="form-field form-floating mb-3">
                 <label asp-for="Input.Email">Email</label>
                 <div class="mb-4 input-group">
                     <span class="input-group-text">
@@ -58,8 +58,7 @@
                 </div>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
-                
+            <div class="form-field form-floating mb-3">
                 <label asp-for="Input.Password">Password</label>
                 <div class="mb-4 input-group">
                     <span class="input-group-text">
@@ -71,7 +70,7 @@
                 </div>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
+            <div class="form-field form-floating mb-3">
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <div class="mb-4 input-group">
                     <span class="input-group-text">

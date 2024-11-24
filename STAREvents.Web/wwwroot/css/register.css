@@ -6,3 +6,15 @@
     padding:2.5em;
     margin-top:1em;
 }
+form#registerForm button#registerSubmit {
+    background-color: #3B3B3B;
+}
+
+form#registerForm .form-field input,
+form#registerForm .form-field .input-group-text {
+    background-color: #DBDBDB !important;
+}
+
+form#registerForm .form-field {
+    color: #8E959F !important;
+}
