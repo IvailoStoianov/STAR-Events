@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="~/images/logo-main.svg" sizes="32x32">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/STAREvents.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation.css" asp-append-version="true" />
@@ -14,8 +14,8 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow mb-3">
-            <div class="container">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow">
+            <div class="container ">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img class="logo img-fluid" src="~/images/logo-main.svg" />
                     STAREvents
@@ -38,13 +38,13 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container rendered-body">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="py-4 mt-5 fixed-bottom box-shadow ">
+    <footer class="py-4 fixed-bottom box-shadow ">
         <div class="container text-center ">
             <p class="display-5 mb-3">STAREvents</p>
             <small class="text-white-50">&copy; Copyrigth by Ivailo. All rigths reserved.</small>

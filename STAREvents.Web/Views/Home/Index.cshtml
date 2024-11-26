@@ -2,7 +2,19 @@
     ViewData["Title"] = "STAREvents";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true"/>
+}
+
+<header class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Welcome to STAR Events</h1>
+        <p class="hero-subtitle">Find and join your favorite events effortlessly</p>
+        <a href="#" class="btn btn-dark hero-btn">Explore Events</a>
+        <div class="hero-images">
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+        </div>
+    </div>
+</header>
