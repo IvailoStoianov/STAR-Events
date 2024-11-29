@@ -51,5 +51,15 @@ namespace STAREvents.Common
             public const int MinLastNameLength = 3;
             public const int MaxImgUrlLength = 2048;
         }
+        public static class CommentConstants
+        {
+            public const int MaxContentLength = 1000;
+            public const int MinContentLength = 1;
+        }
+        public static class TagConstants
+        {
+            public const int MaxTagLength = 50;
+            public const int MinTagLength = 1;
+        }
     }
 }

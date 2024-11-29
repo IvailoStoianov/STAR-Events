@@ -19,7 +19,8 @@ namespace STAREvents.Web.Data
             
             //Applying Configurations
             modelBuilder.ApplyConfiguration(new EventCategoryEntityConfiguration());
-
+            modelBuilder.ApplyConfiguration(new UserEventAttendanceEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new CommentEntityConfiguration());
             //Seeding the data
             SeedDataConfiguration.ApplySeedData(modelBuilder);
 
@@ -27,10 +28,10 @@ namespace STAREvents.Web.Data
         }
 
         public DbSet<Event> Events { get; set; }
-        public DbSet<Venue> Venues { get; set; }
-        public DbSet<Organizer> Organizers { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Comment> Comments { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<EventCategory> EventCategories { get; set; }
+        public DbSet<UserEventAttendance> UsersEventAttendances { get; set; }
+        public DbSet<EventCategory> EventsCategories { get; set; }
     }
 }

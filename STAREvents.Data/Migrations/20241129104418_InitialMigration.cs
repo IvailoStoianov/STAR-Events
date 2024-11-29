@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace STAREvents.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,35 +66,6 @@ namespace STAREvents.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.CategoryID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Organizers",
-                columns: table => new
-                {
-                    OrganizerID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ContactInfo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Organizers", x => x.OrganizerID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Venues",
-                columns: table => new
-                {
-                    VenueID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Venues", x => x.VenueID);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,97 +178,128 @@ namespace STAREvents.Data.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    EventID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VenueID = table.Column<int>(type: "int", nullable: false),
-                    OrganizerID = table.Column<int>(type: "int", nullable: false),
-                    TicketPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MaxAttendees = table.Column<int>(type: "int", nullable: false),
-                    CategoryID = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CreatedOnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    NumberOfParticipants = table.Column<int>(type: "int", nullable: false, comment: "This represents how many users have joined the event."),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Shows wether the event has been deleted"),
+                    OrganizerID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Events", x => x.EventID);
+                    table.PrimaryKey("PK_Events", x => x.EventId);
                     table.ForeignKey(
-                        name: "FK_Events_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_Events_AspNetUsers_OrganizerID",
+                        column: x => x.OrganizerID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Events_Categories_CategoryID",
                         column: x => x.CategoryID,
                         principalTable: "Categories",
                         principalColumn: "CategoryID",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Events_Organizers_OrganizerID",
-                        column: x => x.OrganizerID,
-                        principalTable: "Organizers",
-                        principalColumn: "OrganizerID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Events_Venues_VenueID",
-                        column: x => x.VenueID,
-                        principalTable: "Venues",
-                        principalColumn: "VenueID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventCategories",
+                name: "Comments",
                 columns: table => new
                 {
-                    EventID = table.Column<int>(type: "int", nullable: false),
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    PostedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventsCategories",
+                columns: table => new
+                {
+                    EventID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CategoryID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EventCategories", x => new { x.EventID, x.CategoryID });
+                    table.PrimaryKey("PK_EventsCategories", x => new { x.EventID, x.CategoryID });
                     table.ForeignKey(
-                        name: "FK_EventCategories_Categories_CategoryID",
+                        name: "FK_EventsCategories_Categories_CategoryID",
                         column: x => x.CategoryID,
                         principalTable: "Categories",
                         principalColumn: "CategoryID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_EventCategories_Events_EventID",
+                        name: "FK_EventsCategories_Events_EventID",
                         column: x => x.EventID,
                         principalTable: "Events",
-                        principalColumn: "EventID",
+                        principalColumn: "EventId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tickets",
+                name: "Tags",
                 columns: table => new
                 {
-                    TicketID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventID = table.Column<int>(type: "int", nullable: false),
-                    UserID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    TagId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tickets", x => x.TicketID);
+                    table.PrimaryKey("PK_Tags", x => x.TagId);
                     table.ForeignKey(
-                        name: "FK_Tickets_AspNetUsers_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Tags_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsersEventAttendances",
+                columns: table => new
+                {
+                    EventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JoinedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsersEventAttendances", x => new { x.EventId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UsersEventAttendances_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tickets_Events_EventID",
-                        column: x => x.EventID,
+                        name: "FK_UsersEventAttendances_Events_EventId",
+                        column: x => x.EventId,
                         principalTable: "Events",
-                        principalColumn: "EventID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "EventId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -335,80 +337,6 @@ namespace STAREvents.Data.Migrations
                     { 28, "Networking" },
                     { 29, "Charity" },
                     { 30, "Hobbies" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Organizers",
-                columns: new[] { "OrganizerID", "ContactInfo", "Name" },
-                values: new object[,]
-                {
-                    { 1, "john.doe@example.com", "John Doe" },
-                    { 2, "jane.smith@example.com", "Jane Smith" },
-                    { 3, "emily.johnson@example.com", "Emily Johnson" },
-                    { 4, "michael.brown@example.com", "Michael Brown" },
-                    { 5, "sarah.wilson@example.com", "Sarah Wilson" },
-                    { 6, "david.martinez@example.com", "David Martinez" },
-                    { 7, "chris.lee@example.com", "Chris Lee" },
-                    { 8, "jessica.white@example.com", "Jessica White" },
-                    { 9, "daniel.harris@example.com", "Daniel Harris" },
-                    { 10, "laura.thompson@example.com", "Laura Thompson" },
-                    { 11, "tom.clark@example.com", "Tom Clark" },
-                    { 12, "anna.lewis@example.com", "Anna Lewis" },
-                    { 13, "robert.walker@example.com", "Robert Walker" },
-                    { 14, "lisa.hall@example.com", "Lisa Hall" },
-                    { 15, "mark.allen@example.com", "Mark Allen" },
-                    { 16, "sophie.young@example.com", "Sophie Young" },
-                    { 17, "james.hernandez@example.com", "James Hernandez" },
-                    { 18, "emma.king@example.com", "Emma King" },
-                    { 19, "brian.wright@example.com", "Brian Wright" },
-                    { 20, "olivia.scott@example.com", "Olivia Scott" },
-                    { 21, "kevin.green@example.com", "Kevin Green" },
-                    { 22, "evelyn.adams@example.com", "Evelyn Adams" },
-                    { 23, "jason.baker@example.com", "Jason Baker" },
-                    { 24, "isabella.nelson@example.com", "Isabella Nelson" },
-                    { 25, "ryan.carter@example.com", "Ryan Carter" },
-                    { 26, "grace.mitchell@example.com", "Grace Mitchell" },
-                    { 27, "ethan.perez@example.com", "Ethan Perez" },
-                    { 28, "charlotte.roberts@example.com", "Charlotte Roberts" },
-                    { 29, "henry.turner@example.com", "Henry Turner" },
-                    { 30, "sofia.phillips@example.com", "Sofia Phillips" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Venues",
-                columns: new[] { "VenueID", "Capacity", "Location", "Name" },
-                values: new object[,]
-                {
-                    { 1, 500, "Main Street", "City Hall" },
-                    { 2, 1000, "Central Park", "Sports Arena" },
-                    { 3, 300, "Broadway", "Downtown Theater" },
-                    { 4, 800, "1st Avenue", "Conference Center" },
-                    { 5, 2000, "West End", "Open Air Stadium" },
-                    { 6, 200, "Museum District", "Art Gallery" },
-                    { 7, 150, "East Side", "Community Hall" },
-                    { 8, 1000, "Silicon Valley", "Tech Park" },
-                    { 9, 400, "5th Street", "Music Club" },
-                    { 10, 700, "Downtown", "Grand Ballroom" },
-                    { 11, 1200, "College Road", "University Auditorium" },
-                    { 12, 300, "Lakeside", "Lakeview Pavilion" },
-                    { 13, 5000, "South Park", "City Park" },
-                    { 14, 100, "Downtown Heights", "Skyscraper Rooftop" },
-                    { 15, 400, "Library Avenue", "National Library" },
-                    { 16, 600, "Science Blvd", "Science Museum" },
-                    { 17, 200, "Greenway", "Botanical Garden" },
-                    { 18, 1000, "Opera Lane", "Opera House" },
-                    { 19, 2500, "Expo Road", "Convention Hall" },
-                    { 20, 1500, "Rock Valley", "Amphitheater" },
-                    { 21, 300, "School Street", "City High School Gym" },
-                    { 22, 1000, "Town Center", "Town Square" },
-                    { 23, 600, "Downtown Circle", "Main Event Plaza" },
-                    { 24, 500, "Beachside", "Luxury Resort" },
-                    { 25, 1200, "North Ridge", "Indoor Sports Complex" },
-                    { 26, 200, "Central Station", "Railway Auditorium" },
-                    { 27, 5000, "North Edge", "Open Grounds" },
-                    { 28, 150, "Vintage Road", "Old Town Theater" },
-                    { 29, 350, "Fitness Avenue", "Fitness Center Arena" },
-                    { 30, 800, "Event Street", "Downtown Events Hall" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -451,14 +379,14 @@ namespace STAREvents.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EventCategories_CategoryID",
-                table: "EventCategories",
-                column: "CategoryID");
+                name: "IX_Comments_EventId",
+                table: "Comments",
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_ApplicationUserId",
-                table: "Events",
-                column: "ApplicationUserId");
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_CategoryID",
@@ -471,19 +399,19 @@ namespace STAREvents.Data.Migrations
                 column: "OrganizerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_VenueID",
-                table: "Events",
-                column: "VenueID");
+                name: "IX_EventsCategories_CategoryID",
+                table: "EventsCategories",
+                column: "CategoryID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_EventID",
-                table: "Tickets",
-                column: "EventID");
+                name: "IX_Tags_EventId",
+                table: "Tags",
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserID",
-                table: "Tickets",
-                column: "UserID");
+                name: "IX_UsersEventAttendances_UserId",
+                table: "UsersEventAttendances",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -505,10 +433,16 @@ namespace STAREvents.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "EventCategories");
+                name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "EventsCategories");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "UsersEventAttendances");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -521,12 +455,6 @@ namespace STAREvents.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "Organizers");
-
-            migrationBuilder.DropTable(
-                name: "Venues");
         }
     }
 }

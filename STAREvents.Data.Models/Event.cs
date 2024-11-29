@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
+using Microsoft.EntityFrameworkCore;
 
 //TODO Add [Comment]
 
@@ -15,8 +16,12 @@ namespace STAREvents.Data.Models
 {
     public class Event
     {
+        public Event()
+        {
+            EventId = Guid.NewGuid();
+        }
         [Key]
-        public int EventID { get; set; }
+        public Guid EventId { get; set; }
 
         [Required]
         [MaxLength(MaxNameLength)]
@@ -30,24 +35,24 @@ namespace STAREvents.Data.Models
         [MaxLength(MaxImgUrlLength)]
         public string ImageUrl { get; set; } = string.Empty;
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime CreatedOnDate { get; set; }
+        [Required]
+        public DateTime StartDate { get; set; }
+        [Required]
+        public DateTime EndDate { get; set; }
+        [Required]
+        public int Capacity { get; set; }
+        [Required]
+        [Comment("This represents how many users have joined the event.")]
+        public int NumberOfParticipants { get; set; }
+        [Comment("Shows wether the event has been deleted")]
+        public bool isDeleted { get; set; }
 
-        public int VenueID { get; set; }
-
-        [ForeignKey("VenueID")]
-        public Venue Venue { get; set; } = null!;
-
-        public int OrganizerID { get; set; }
+        public Guid OrganizerID { get; set; }
 
         [ForeignKey("OrganizerID")]
-        public Organizer Organizer { get; set; } = null!;
+        public ApplicationUser Organizer { get; set; } = null!;
 
-        [Required]
-        [Column(TypeName = DecimalType)]
-        public decimal TicketPrice { get; set; }
-
-        [Required]
-        public int MaxAttendees { get; set; }
 
         public int CategoryID { get; set; }
 
@@ -56,7 +61,12 @@ namespace STAREvents.Data.Models
 
         public ICollection<EventCategory> EventCategories { get; set; }
             = new HashSet<EventCategory>();
-        public ICollection<Ticket> Tickets { get; set; }
-            = new HashSet<Ticket>();
+        public ICollection<Comment> EventComments { get; set; }
+            = new HashSet<Comment>();
+        public ICollection<Tag> Tags { get; set; } 
+            = new HashSet<Tag>();
+        public ICollection<UserEventAttendance> UserEventAttendances { get; set; } 
+            = new HashSet<UserEventAttendance>();
+
     }
 }

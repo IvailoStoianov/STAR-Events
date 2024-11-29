@@ -27,9 +27,12 @@ namespace STAREvents.Data.Models
         [MaxLength(MaxImgUrlLength)]
         public string ImageUrl { get; set; } = string.Empty;
 
-        public ICollection<Ticket> Tickets { get; set; }
-            = new HashSet<Ticket>();
         public ICollection<Event> OrganizedEvents { get; set; }
             = new HashSet<Event>();
+        public ICollection<UserEventAttendance> UserEventAttendances { get; set; } 
+            = new HashSet<UserEventAttendance>();
+        public ICollection<Comment> UserComments { get; set; }
+            = new HashSet<Comment>();
+
     }
 }
