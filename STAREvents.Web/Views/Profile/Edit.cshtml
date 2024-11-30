@@ -1,47 +1,86 @@
 ﻿@model ProfileInputModel
 
 @{
-    ViewData["Title"] = "Edit profile";
+    ViewData["Title"] = "Edit Profile";
 }
 
-<div class="container mt-5">
-    <h2>Profile</h2>
-    <form method="post" enctype="multipart/form-data">
-        <div class="form-group mb-3">
-            <label for="ImageUrl">Profile Picture</label>
-            <input asp-for="ImageUrl" type="file" class="form-control" id="ImageUrl" />
-            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/editprofile.css" asp-append-version="true" />
+}
+
+<div class="container profile-container mt-5 pb-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card profile-card">
+                <div class="card-header profile-card-header">
+                    <h2 class="mb-0">Edit Profile</h2>
+                </div>
+                <div class="card-body profile-card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row mb-3">
+                            <div class="col-md-4 text-center">
+                                <img id="profile-picture" src="@Model.ImageUrl" alt="Profile Picture" class="profile-picture mb-3">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ImageUrl" class="profile-label">Profile Picture</label>
+                                    <input asp-for="ImageUrl" type="file" class="form-control" />
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="FirstName" class="profile-label">First Name</label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="LastName" class="profile-label">Last Name</label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="Username" class="profile-label">Username</label>
+                                    <input asp-for="Username" class="form-control" />
+                                    <span asp-validation-for="Username" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="Email" class="profile-label">Email</label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="PhoneNumber" class="profile-label">Phone Number</label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="OldPassword" class="profile-label">Old Password</label>
+                                    <input asp-for="OldPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="OldPassword" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="Password" class="profile-label">New Password</label>
+                                    <input asp-for="Password" type="password" class="form-control" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="ConfirmPassword" class="profile-label">Confirm New Password</label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn edit-profile-btn">Save Changes</button>
+                                    <a asp-page="/Profile/Index" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="form-group mb-3">
-            <label for="FirstName">First Name</label>
-            <input asp-for="FirstName" class="form-control" id="FirstName" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label for="LastName">Last Name</label>
-            <input asp-for="LastName" class="form-control" id="LastName" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label for="Username">Username</label>
-            <input asp-for="Username" class="form-control" id="Username" />
-            <span asp-validation-for="Username" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label for="Email">Email</label>
-            <input asp-for="Email" class="form-control" id="Email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label for="PhoneNumber">Phone Number</label>
-            <input asp-for="PhoneNumber" class="form-control" id="PhoneNumber" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label for="Password">Password</label>
-            <input asp-for="Password" type="password" class="form-control" id="Password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/profile.js" asp-append-version="true"></script>
+}

@@ -10,5 +10,6 @@ namespace STAREvents.Services.Data.Interfaces
     public interface IProfileService
     {
         Task<ProfileViewModel> LoadProfileAsync(Guid userId);
+        Task<ProfileInputModel> LoadEditFormAsync(Guid userId);
     }
 }

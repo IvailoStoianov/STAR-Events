@@ -23,5 +23,14 @@ namespace STAREvents.Common
             public const string PasswordMismatch = "Passwords do not match";
             public const string InvalidPhoneNumber = "Invalid phone number. Example: +1234567890 or 1234567890";
         }
+        public static class ProfileServiceErrorMessages
+        {
+            public const string UserNotFound = "User not found.";
+        }
+        public static class ProfileControllerErrorMessages
+        {
+            public const string ProfileLoadError = "An error occurred while loading the profile.";
+            public const string EditFormLoadError = "An error occurred while loading the edit form.";
+        }
     }
 }

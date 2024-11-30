@@ -1,4 +1,11 @@
 ﻿footer {
     background-color: #101112;
     color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: auto;
+}
+
+.container {
+    flex: 1;
 }

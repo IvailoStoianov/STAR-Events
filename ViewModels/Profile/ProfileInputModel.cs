@@ -1,4 +1,6 @@
-﻿using System;
+﻿using STAREvents.Data.Models;
+using STAREvents.Services.Mapping;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,7 +11,7 @@ using static STAREvents.Common.ErrorMessagesConstants.ApplicationUserValidationE
 
 namespace STAREvents.Web.ViewModels.Profile
 {
-    public class ProfileInputModel
+    public class ProfileInputModel : IMapFrom<ApplicationUser>
     {
         [Required(ErrorMessage = RequiredField)]
         [MaxLength(MaxFirstNameLength, ErrorMessage = MaxLength)]
@@ -34,14 +36,20 @@ namespace STAREvents.Web.ViewModels.Profile
         [EmailAddress(ErrorMessage = InvalidEmailAddress)]
         public string Email { get; set; } = null!;
 
+        [Required(ErrorMessage = "Old password is required")]
+        [DataType(DataType.Password)]
+        public string OldPassword { get; set; } = string.Empty;
+
         [Required(ErrorMessage = RequiredField)]
         [MinLength(MinPasswordLength, ErrorMessage = MinLength)]
         [MaxLength(MaxPasswordLength, ErrorMessage = MaxLength)]
         [RegularExpression(PasswordRegex, ErrorMessage = PasswordRequirements)]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
 
         [Required(ErrorMessage = RequiredField)]
         [Compare("Password", ErrorMessage = PasswordMismatch)]
+        [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; } = null!;
 
         [Required(ErrorMessage = RequiredField)]
