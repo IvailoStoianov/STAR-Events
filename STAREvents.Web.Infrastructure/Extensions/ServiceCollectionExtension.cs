@@ -14,6 +14,7 @@ namespace STAREvents.Web.Infrastructure.Extensions
     using STAREvents.Data.Repository.Interfaces;
 
     using Microsoft.Extensions.DependencyInjection;
+    using STAREvents.Services.Data.Interfaces;
 
     public static class ServiceCollectionExtensions
     {
@@ -82,5 +83,6 @@ namespace STAREvents.Web.Infrastructure.Extensions
                 services.AddScoped(serviceInterfaceType, serviceType);
             }
         }
+
     }
 }

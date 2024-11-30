@@ -1,0 +1,47 @@
+﻿@model ProfileInputModel
+
+@{
+    ViewData["Title"] = "Edit profile";
+}
+
+<div class="container mt-5">
+    <h2>Profile</h2>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group mb-3">
+            <label for="ImageUrl">Profile Picture</label>
+            <input asp-for="ImageUrl" type="file" class="form-control" id="ImageUrl" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="FirstName">First Name</label>
+            <input asp-for="FirstName" class="form-control" id="FirstName" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="LastName">Last Name</label>
+            <input asp-for="LastName" class="form-control" id="LastName" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Username">Username</label>
+            <input asp-for="Username" class="form-control" id="Username" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Email">Email</label>
+            <input asp-for="Email" class="form-control" id="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="PhoneNumber">Phone Number</label>
+            <input asp-for="PhoneNumber" class="form-control" id="PhoneNumber" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Password">Password</label>
+            <input asp-for="Password" type="password" class="form-control" id="Password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>

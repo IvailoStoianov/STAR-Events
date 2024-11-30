@@ -1,0 +1,53 @@
+﻿@model ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<div class="container profile-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card profile-card">
+                <div class="card-header profile-card-header">
+                    <h2 class="mb-0">Profile</h2>
+                </div>
+                <div class="card-body profile-card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-center">
+                            <img id="profile-picture" src="@Model.ImageUrl" alt="Profile Picture" class="profile-picture mb-3">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="profile-label">First Name</label>
+                                <p class="profile-value">@Model.FirstName</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="profile-label">Last Name</label>
+                                <p class="profile-value">@Model.LastName</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="profile-label">Email</label>
+                                <p class="profile-value">@Model.Email</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="profile-label">Username</label>
+                                <p class="profile-value">@Model.Username</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="profile-label">Phone Number</label>
+                                <p class="profile-value">@Model.PhoneNumber</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <a asp-page="/Profile/Edit" class="btn edit-profile-btn">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

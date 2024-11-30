@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace STAREvents.Services.Mapping
 {
+    using System.Linq.Expressions;
+
+    using AutoMapper.QueryableExtensions;
+
     public static class QueryableMappingExtensions
     {
         public static IQueryable<TDestination> To<TDestination>(
@@ -33,6 +37,5 @@ namespace STAREvents.Services.Mapping
 
             return source.ProjectTo<TDestination>(AutoMapperConfig.MapperInstance.ConfigurationProvider, parameters);
         }
-
     }
 }

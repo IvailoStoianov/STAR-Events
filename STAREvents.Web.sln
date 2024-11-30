@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Services.Mapping
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web.Infrastructure", "STAREvents.Web.Infrastructure\STAREvents.Web.Infrastructure.csproj", "{034D6057-A663-4740-B50D-E0B978095B55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web.ViewModels", "ViewModels\STAREvents.Web.ViewModels.csproj", "{FF784E67-F84C-454A-A47F-EBFB4655C7BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{034D6057-A663-4740-B50D-E0B978095B55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{034D6057-A663-4740-B50D-E0B978095B55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{034D6057-A663-4740-B50D-E0B978095B55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF784E67-F84C-454A-A47F-EBFB4655C7BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF784E67-F84C-454A-A47F-EBFB4655C7BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF784E67-F84C-454A-A47F-EBFB4655C7BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF784E67-F84C-454A-A47F-EBFB4655C7BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{747340B9-C891-4DF1-9727-5070CDDA6EFB} = {72644802-8C0A-473E-B771-5C5903E87E54}
 		{3694DDCA-5055-4445-9CDF-B69C8B43862B} = {41968515-AA15-4A30-AA9D-9AA6E29D96EC}
 		{034D6057-A663-4740-B50D-E0B978095B55} = {6BC77376-CEED-417F-AD0C-45D1A53562CB}
+		{FF784E67-F84C-454A-A47F-EBFB4655C7BA} = {6BC77376-CEED-417F-AD0C-45D1A53562CB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C14927A-CD8E-43CD-8345-802198FCA006}

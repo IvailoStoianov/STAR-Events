@@ -14,6 +14,7 @@ namespace STAREvents.Data.Models
         public ApplicationUser()
         {
             this.Id = Guid.NewGuid();
+            ImageUrl = "/images/default-pfp.svg";
         }
         [Required]
         [MaxLength(MaxFirstNameLength)]

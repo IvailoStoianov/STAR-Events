@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\STAREvents.Data\STAREvents.Data.csproj" />
+    <ProjectReference Include="..\STAREvents.Services.Mapping\STAREvents.Services.Mapping.csproj" />
+    <ProjectReference Include="..\ViewModels\STAREvents.Web.ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -27,6 +27,7 @@
     <ProjectReference Include="..\STAREvents.Services.Mapping\STAREvents.Services.Mapping.csproj" />
     <ProjectReference Include="..\STAREvents.Services\STAREvents.Services.Data.csproj" />
     <ProjectReference Include="..\STAREvents.Web.Infrastructure\STAREvents.Web.Infrastructure.csproj" />
+    <ProjectReference Include="..\ViewModels\STAREvents.Web.ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

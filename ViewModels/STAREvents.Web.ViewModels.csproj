@@ -7,10 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\STAREvents.Common\STAREvents.Common.csproj" />
     <ProjectReference Include="..\STAREvents.Data.Models\STAREvents.Data.Models.csproj" />
-    <ProjectReference Include="..\STAREvents.Data\STAREvents.Data.csproj" />
-    <ProjectReference Include="..\STAREvents.Services\STAREvents.Services.Data.csproj" />
+    <ProjectReference Include="..\STAREvents.Services.Mapping\STAREvents.Services.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

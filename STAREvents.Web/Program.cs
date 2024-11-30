@@ -43,9 +43,7 @@ namespace STAREvents.Web
             builder.Services.AddRazorPages();
 
             builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
-            builder.Services.RegisterUserDefinedServices(typeof(IBaseService).Assembly); //Not sure this is right
-
-            builder.Services.AddScoped<IBaseService, BaseService>(); //Not sure this is right
+            builder.Services.RegisterUserDefinedServices(typeof(IProfileService).Assembly); //Not sure this is right
 
             var app = builder.Build();
 
