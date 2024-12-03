@@ -1,9 +1,7 @@
-﻿using STAREvents.Web.ViewModels.Profile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
+using STAREvents.Data.Models;
+using STAREvents.Web.ViewModels.Profile;
+
 
 namespace STAREvents.Services.Data.Interfaces
 {
@@ -11,5 +9,8 @@ namespace STAREvents.Services.Data.Interfaces
     {
         Task<ProfileViewModel> LoadProfileAsync(Guid userId);
         Task<ProfileInputModel> LoadEditFormAsync(Guid userId);
+        Task<ApplicationUser> GetUserByIdAsync(Guid userId);
+        Task UpdateProfileAsync(Guid userId, ProfileInputModel model);
+        Task<IdentityResult> ChangePasswordAsync(Guid userId, ChangePasswordViewModel model);
     }
 }

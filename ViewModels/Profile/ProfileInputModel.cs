@@ -1,4 +1,5 @@
-﻿using STAREvents.Data.Models;
+﻿using Microsoft.AspNetCore.Http;
+using STAREvents.Data.Models;
 using STAREvents.Services.Mapping;
 using System;
 using System.Collections.Generic;
@@ -13,47 +14,26 @@ namespace STAREvents.Web.ViewModels.Profile
 {
     public class ProfileInputModel : IMapFrom<ApplicationUser>
     {
-        [Required(ErrorMessage = RequiredField)]
+        [Required]
         [MaxLength(MaxFirstNameLength, ErrorMessage = MaxLength)]
         [MinLength(MinFirstNameLength, ErrorMessage = MinLength)]
-        public string FirstName { get; set; } = null!;
-
-        [Required(ErrorMessage = RequiredField)]
+        public string FirstName { get; set; } = string.Empty;
+        [Required]
         [MaxLength(MaxLastNameLength, ErrorMessage = MaxLength)]
         [MinLength(MinLastNameLength, ErrorMessage = MinLength)]
-        public string LastName { get; set; } = null!;
+        public string LastName { get; set; } = string.Empty;
 
-        [MaxLength(MaxImgUrlLength, ErrorMessage = MaxLength)]
-        [Url(ErrorMessage = InvalidUrl)]
-        public string ImageUrl { get; set; } = null!;
+        //[MaxLength(MaxImgUrlLength, ErrorMessage = MaxLength)]
+        //[Url(ErrorMessage = InvalidUrl)]
+        public byte[] ProfilePicture { get; set; } = Array.Empty<byte>();
 
-        [Required(ErrorMessage = RequiredField)]
+        [Required]
         [MaxLength(MaxUsernameLength, ErrorMessage = MaxLength)]
         [MinLength(MinUsernameLength, ErrorMessage = MinLength)]
-        public string Username { get; set; } = null!;
+        public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = RequiredField)]
+        [Required]
         [EmailAddress(ErrorMessage = InvalidEmailAddress)]
-        public string Email { get; set; } = null!;
-
-        [Required(ErrorMessage = "Old password is required")]
-        [DataType(DataType.Password)]
-        public string OldPassword { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = RequiredField)]
-        [MinLength(MinPasswordLength, ErrorMessage = MinLength)]
-        [MaxLength(MaxPasswordLength, ErrorMessage = MaxLength)]
-        [RegularExpression(PasswordRegex, ErrorMessage = PasswordRequirements)]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = null!;
-
-        [Required(ErrorMessage = RequiredField)]
-        [Compare("Password", ErrorMessage = PasswordMismatch)]
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; } = null!;
-
-        [Required(ErrorMessage = RequiredField)]
-        [RegularExpression(PhoneNumberRegex, ErrorMessage = InvalidPhoneNumber)]
-        public string PhoneNumber { get; set; } = null!;
+        public string Email { get; set; } = string.Empty;
     }
 }

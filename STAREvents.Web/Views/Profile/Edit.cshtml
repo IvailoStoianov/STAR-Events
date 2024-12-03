@@ -6,7 +6,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/editprofile.css" asp-append-version="true" />
 }
 
 <div class="container profile-container mt-5 pb-2">
@@ -17,16 +16,26 @@
                     <h2 class="mb-0">Edit Profile</h2>
                 </div>
                 <div class="card-body profile-card-body">
-                    <form method="post" enctype="multipart/form-data">
+                    <form id="editProfileForm" method="post" enctype="multipart/form-data" asp-action="Edit">
                         <div class="row mb-3">
-                            <div class="col-md-4 text-center">
-                                <img id="profile-picture" src="@Model.ImageUrl" alt="Profile Picture" class="profile-picture mb-3">
+                            <div class="col-md-4 profile-picture-container text-center">
+                                @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
+                                {
+                                    var base64 = Convert.ToBase64String(Model.ProfilePicture);
+                                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                                    <img id="profile-picture" src="@imgSrc" alt="Profile Picture" class="profile-picture mb-3">
+                                }
+                                else
+                                {
+                                    <img id="profile-picture" src="/images/default-pfp.svg" alt="Profile Picture" class="profile-picture mb-3">
+                                }
                             </div>
                             <div class="col-md-8">
                                 <div class="form-group mb-3">
-                                    <label asp-for="ImageUrl" class="profile-label">Profile Picture</label>
-                                    <input asp-for="ImageUrl" type="file" class="form-control" />
-                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    <label class="profile-label">Profile Picture</label>
+                                    <input type="file" id="profilePictureFile" class="form-control" />
+                                    <input type="hidden" asp-for="ProfilePicture" id="profilePicture" />
+                                    <span class="text-danger" id="fileSizeError"></span>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label asp-for="FirstName" class="profile-label">First Name</label>
@@ -48,29 +57,9 @@
                                     <input asp-for="Email" class="form-control" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label asp-for="PhoneNumber" class="profile-label">Phone Number</label>
-                                    <input asp-for="PhoneNumber" class="form-control" />
-                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label asp-for="OldPassword" class="profile-label">Old Password</label>
-                                    <input asp-for="OldPassword" type="password" class="form-control" />
-                                    <span asp-validation-for="OldPassword" class="text-danger"></span>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label asp-for="Password" class="profile-label">New Password</label>
-                                    <input asp-for="Password" type="password" class="form-control" />
-                                    <span asp-validation-for="Password" class="text-danger"></span>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label asp-for="ConfirmPassword" class="profile-label">Confirm New Password</label>
-                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
-                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn edit-profile-btn">Save Changes</button>
-                                    <a asp-page="/Profile/Index" class="btn btn-secondary">Cancel</a>
+                                    <a asp-controller="Profile" asp-action="Index" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </div>
                         </div>
@@ -83,4 +72,6 @@
 
 @section Scripts {
     <script src="~/js/profile.js" asp-append-version="true"></script>
+    <script src="~/js/edit-form.js" asp-append-version="true"></script>
 }
+

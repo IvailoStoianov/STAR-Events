@@ -26,11 +26,18 @@ namespace STAREvents.Common
         public static class ProfileServiceErrorMessages
         {
             public const string UserNotFound = "User not found.";
+            public const string FailedToUpdateUserProfile = "Failed to update user profile.";
+            public const string FailedToChangePassword = "Failed to change password.";
+            public const string InvalidImageFormat = "Invalid image format. Only JPEG, PNG, and GIF are allowed.";
+            public const string ProfilePictureSizeExceeded = "File size exceeds {0} KB.";
         }
         public static class ProfileControllerErrorMessages
         {
+            public const string GeneralErrorForUpdatingProfile = "An error occurred while updating the profile.";
             public const string ProfileLoadError = "An error occurred while loading the profile.";
             public const string EditFormLoadError = "An error occurred while loading the edit form.";
+            public const string IncorrectCurrentPasswordError = "The current password is incorrect.";
+            public const string UpdateProfileError = "An error occurred while updating the profile.";
         }
     }
 }

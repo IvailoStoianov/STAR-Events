@@ -1,0 +1,20 @@
+﻿body {
+    background-color: #F7CF47;
+}
+
+footer {
+    position: relative !important;
+}
+
+.card-header {
+    background-color: black;
+    color: white;
+}
+
+.rendered-body{
+    padding-bottom:2em;
+}
+
+.create-event-btn {
+    background-color: #F7CF47;
+}

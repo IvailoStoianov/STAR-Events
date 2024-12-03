@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\STAREvents.Data\STAREvents.Data.csproj" />
     <ProjectReference Include="..\STAREvents.Services.Mapping\STAREvents.Services.Mapping.csproj" />
     <ProjectReference Include="..\ViewModels\STAREvents.Web.ViewModels.csproj" />

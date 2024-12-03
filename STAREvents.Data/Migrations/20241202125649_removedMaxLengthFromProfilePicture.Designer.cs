@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STAREvents.Web.Data;
 
@@ -11,9 +12,11 @@ using STAREvents.Web.Data;
 namespace STAREvents.Data.Migrations
 {
     [DbContext(typeof(STAREventsDbContext))]
-    partial class STAREventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241202125649_removedMaxLengthFromProfilePicture")]
+    partial class removedMaxLengthFromProfilePicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,7 +251,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -429,7 +432,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.Event", b =>
@@ -485,7 +488,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasIndex("OrganizerID");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.EventCategory", b =>
@@ -500,7 +503,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("EventsCategories", (string)null);
+                    b.ToTable("EventsCategories");
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.Tag", b =>
@@ -521,7 +524,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.UserEventAttendance", b =>
@@ -539,7 +542,7 @@ namespace STAREvents.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersEventAttendances", (string)null);
+                    b.ToTable("UsersEventAttendances");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

@@ -1,0 +1,87 @@
+﻿@model CreateEventInputModel
+
+@{
+    ViewData["Title"] = "Create Event";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/events.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/create-events.css" asp-append-version="true" />
+}
+
+<div class="container event-container mt-5 pb-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card event-card">
+                <div class="card-header event-card-header">
+                    <h2 class="mb-0">Create Event</h2>
+                </div>
+                <div class="card-body event-card-body">
+                    <form id="createEventForm" method="post" enctype="multipart/form-data" asp-action="Create">
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="event-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="event-label"></label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="StartDate" class="event-label"></label>
+                            <input asp-for="StartDate" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="EndDate" class="event-label"></label>
+                            <input asp-for="EndDate" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Capacity" class="event-label"></label>
+                            <input asp-for="Capacity" class="form-control" />
+                            <span asp-validation-for="Capacity" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="event-label">Event Image</label>
+                            <input type="file" id="eventImageFile" class="form-control" />
+                            <input type="hidden" asp-for="Image" id="eventImage" />
+                            <span class="text-danger" id="fileSizeError"></span>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn create-event-btn">Create Event</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('eventImageFile').addEventListener('change', function (event) {
+            var file = event.target.files[0];
+            var maxSize = 2 * 1024 * 1024; // 2 MB
+            var fileSizeError = document.getElementById('fileSizeError');
+
+            if (file) {
+                if (file.size > maxSize) {
+                    fileSizeError.textContent = "File size exceeds 2 MB.";
+                    event.target.value = ""; // Clear the file input
+                } else {
+                    fileSizeError.textContent = "";
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var base64String = e.target.result.split(',')[1];
+                        document.getElementById('eventImage').value = base64String;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
+}

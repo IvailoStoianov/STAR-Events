@@ -8,6 +8,10 @@ using STAREvents.Web.Data;
 using STAREvents.Web.Infrastructure.Extensions;
 using STAREvents.Web.Models;
 using STAREvents.Data;
+using Azure.Storage.Blobs;
+using STAREvents.Services.Data;
+using System.Configuration;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace STAREvents.Web
 {
@@ -17,12 +21,15 @@ namespace STAREvents.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //Should remove later
+            builder.Logging.ClearProviders(); 
+            builder.Logging.AddConsole();
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<STAREventsDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services
@@ -37,19 +44,33 @@ namespace STAREvents.Web
                 .AddDefaultTokenProviders();
 
             builder.Services.AddControllersWithViews();
-
-
-
             builder.Services.AddRazorPages();
 
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 104857600; // 100 MB
+            });
+
+
             builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
-            builder.Services.RegisterUserDefinedServices(typeof(IProfileService).Assembly); //Not sure this is right
+            builder.Services.RegisterUserDefinedServices(typeof(IBaseService).Assembly);
+
 
             var app = builder.Build();
+
+            // Add middleware to log requests and responses
+            app.Use(async (context, next) =>
+            {
+                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Handling request: {RequestPath}", context.Request.Path);
+                await next.Invoke();
+                logger.LogInformation("Finished handling request.");
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
             }
             else
@@ -59,8 +80,6 @@ namespace STAREvents.Web
                 app.UseHsts();
             }
 
-
-
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
             app.UseHttpsRedirection();
@@ -68,7 +87,7 @@ namespace STAREvents.Web
 
             app.UseRouting();
 
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
