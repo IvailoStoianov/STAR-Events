@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.CreateEvents;
+using System.Security.Claims;
 
 namespace STAREvents.Web.Controllers
 {
+    [Authorize]
     public class CreateEventsController : Controller
     {
         private readonly ICreateEventsService createEventsService;
@@ -14,9 +17,11 @@ namespace STAREvents.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            CreateEventInputModel model = new CreateEventInputModel();
+            model.Categories = await createEventsService.LoadCategoriesAsync();
+            return View(model);
         }
 
         [HttpPost]
@@ -29,12 +34,25 @@ namespace STAREvents.Web.Controllers
 
             try
             {
-                await createEventsService.CreateEventAsync(model);
+                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userIdValue == null)
+                {
+                    return Unauthorized();
+                }
+
+                var userId = new Guid(userIdValue);
+                await createEventsService.CreateEventAsync(model, userId);
                 return RedirectToAction("Index", "Home");
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again later.");
+
                 return View(model);
             }
         }

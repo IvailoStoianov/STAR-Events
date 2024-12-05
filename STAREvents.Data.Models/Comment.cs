@@ -12,6 +12,10 @@ namespace STAREvents.Data.Models
 {
     public class Comment
     {
+        public Comment()
+        {
+            CommentId = Guid.NewGuid();
+        }
         [Key]
         public Guid CommentId { get; set; }
 

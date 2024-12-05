@@ -12,8 +12,8 @@ using STAREvents.Web.Data;
 namespace STAREvents.Data.Migrations
 {
     [DbContext(typeof(STAREventsDbContext))]
-    [Migration("20241202125649_removedMaxLengthFromProfilePicture")]
-    partial class removedMaxLengthFromProfilePicture
+    [Migration("20241205163107_Removed-tags")]
+    partial class Removedtags
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,11 +238,9 @@ namespace STAREvents.Data.Migrations
 
             modelBuilder.Entity("STAREvents.Data.Models.Category", b =>
                 {
-                    b.Property<int>("CategoryID")
+                    b.Property<Guid>("CategoryID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -256,152 +254,152 @@ namespace STAREvents.Data.Migrations
                     b.HasData(
                         new
                         {
-                            CategoryID = 1,
+                            CategoryID = new Guid("e9b7be08-b33e-476a-88ee-cf088bea38a4"),
                             Name = "Music"
                         },
                         new
                         {
-                            CategoryID = 2,
+                            CategoryID = new Guid("f8265891-51e1-47ae-a846-f14bcdf42e8c"),
                             Name = "Sports"
                         },
                         new
                         {
-                            CategoryID = 3,
+                            CategoryID = new Guid("ee63f2cd-f9e8-49e2-a4ff-8c8eabcf0b59"),
                             Name = "Technology"
                         },
                         new
                         {
-                            CategoryID = 4,
+                            CategoryID = new Guid("66962860-7fb2-43e8-8421-59e02e9e5868"),
                             Name = "Education"
                         },
                         new
                         {
-                            CategoryID = 5,
+                            CategoryID = new Guid("0417e57b-03bd-41bf-ba6a-183faab813c8"),
                             Name = "Health"
                         },
                         new
                         {
-                            CategoryID = 6,
+                            CategoryID = new Guid("a12fd689-9a73-4f31-a63d-2deabd46f0ab"),
                             Name = "Art"
                         },
                         new
                         {
-                            CategoryID = 7,
+                            CategoryID = new Guid("d83d7fed-1665-416d-a912-69a4413f2b89"),
                             Name = "Business"
                         },
                         new
                         {
-                            CategoryID = 8,
+                            CategoryID = new Guid("7d90f0a3-ab78-43ab-a8b2-1bac1994c9c9"),
                             Name = "Science"
                         },
                         new
                         {
-                            CategoryID = 9,
+                            CategoryID = new Guid("5a1c8b11-fcaf-48ff-a8e2-60a22e3f49d7"),
                             Name = "Comedy"
                         },
                         new
                         {
-                            CategoryID = 10,
+                            CategoryID = new Guid("8eec4317-2bf3-409d-a6de-a02fb637288c"),
                             Name = "Travel"
                         },
                         new
                         {
-                            CategoryID = 11,
+                            CategoryID = new Guid("bc786c75-4c9b-4b62-a71a-3e0804231fc3"),
                             Name = "Lifestyle"
                         },
                         new
                         {
-                            CategoryID = 12,
+                            CategoryID = new Guid("8b4c824a-41a6-443b-a144-1ee46ce20fc2"),
                             Name = "Fitness"
                         },
                         new
                         {
-                            CategoryID = 13,
+                            CategoryID = new Guid("79e77c2d-7def-41f1-bcc0-5e8fda0a3169"),
                             Name = "Gaming"
                         },
                         new
                         {
-                            CategoryID = 14,
+                            CategoryID = new Guid("bbb80a03-e3c3-4782-9097-c0e806c3117c"),
                             Name = "Cooking"
                         },
                         new
                         {
-                            CategoryID = 15,
+                            CategoryID = new Guid("5dc8e075-02bc-40c0-89a8-2c5e0336ca2e"),
                             Name = "History"
                         },
                         new
                         {
-                            CategoryID = 16,
+                            CategoryID = new Guid("5f0dff34-416f-4441-9105-d5eaae2a7e3c"),
                             Name = "Politics"
                         },
                         new
                         {
-                            CategoryID = 17,
+                            CategoryID = new Guid("1ba48aab-06d1-4513-8d1a-9ca6e2150011"),
                             Name = "Finance"
                         },
                         new
                         {
-                            CategoryID = 18,
+                            CategoryID = new Guid("3b4f39ef-b91a-4c21-94af-ffea46994078"),
                             Name = "Nature"
                         },
                         new
                         {
-                            CategoryID = 19,
+                            CategoryID = new Guid("1169ae12-5a7e-48a7-a6d6-2a1a7e1c0be2"),
                             Name = "Photography"
                         },
                         new
                         {
-                            CategoryID = 20,
+                            CategoryID = new Guid("fde62827-21e1-4b3f-873a-cce9ac1c80aa"),
                             Name = "Writing"
                         },
                         new
                         {
-                            CategoryID = 21,
+                            CategoryID = new Guid("37e0ac3a-02b7-4efc-9af3-5b57f5c2dd77"),
                             Name = "Dance"
                         },
                         new
                         {
-                            CategoryID = 22,
+                            CategoryID = new Guid("8e13109e-b0c8-4984-b584-d7ed446920ac"),
                             Name = "Film"
                         },
                         new
                         {
-                            CategoryID = 23,
+                            CategoryID = new Guid("b2bcb1d8-6559-401d-a41d-4f5bfa60be2a"),
                             Name = "Literature"
                         },
                         new
                         {
-                            CategoryID = 24,
+                            CategoryID = new Guid("ea5adb99-1fbb-41ff-b464-5d4ceb20960a"),
                             Name = "Environment"
                         },
                         new
                         {
-                            CategoryID = 25,
+                            CategoryID = new Guid("25f0cf63-26d8-440d-8f26-12177d935429"),
                             Name = "Social"
                         },
                         new
                         {
-                            CategoryID = 26,
+                            CategoryID = new Guid("2822802b-a6a2-4e01-a2d2-ed8dbb1b5f44"),
                             Name = "Community"
                         },
                         new
                         {
-                            CategoryID = 27,
+                            CategoryID = new Guid("b20962b2-8c64-4a0e-b44c-0f3859f293b9"),
                             Name = "Theatre"
                         },
                         new
                         {
-                            CategoryID = 28,
+                            CategoryID = new Guid("6a1ccd21-9719-45ea-9b20-ef1610802dd6"),
                             Name = "Networking"
                         },
                         new
                         {
-                            CategoryID = 29,
+                            CategoryID = new Guid("0fbc3c69-cae3-4747-82a3-c8f2bc841570"),
                             Name = "Charity"
                         },
                         new
                         {
-                            CategoryID = 30,
+                            CategoryID = new Guid("387756b4-019f-47ef-9faa-2ea83cf75773"),
                             Name = "Hobbies"
                         });
                 });
@@ -444,8 +442,8 @@ namespace STAREvents.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOnDate")
                         .HasColumnType("datetime2");
@@ -460,8 +458,7 @@ namespace STAREvents.Data.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -496,35 +493,14 @@ namespace STAREvents.Data.Migrations
                     b.Property<Guid>("EventID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("EventID", "CategoryID");
 
                     b.HasIndex("CategoryID");
 
                     b.ToTable("EventsCategories");
-                });
-
-            modelBuilder.Entity("STAREvents.Data.Models.Tag", b =>
-                {
-                    b.Property<Guid>("TagId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("TagId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("STAREvents.Data.Models.UserEventAttendance", b =>
@@ -653,13 +629,6 @@ namespace STAREvents.Data.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("STAREvents.Data.Models.Tag", b =>
-                {
-                    b.HasOne("STAREvents.Data.Models.Event", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("EventId");
-                });
-
             modelBuilder.Entity("STAREvents.Data.Models.UserEventAttendance", b =>
                 {
                     b.HasOne("STAREvents.Data.Models.Event", "Event")
@@ -698,8 +667,6 @@ namespace STAREvents.Data.Migrations
                     b.Navigation("EventCategories");
 
                     b.Navigation("EventComments");
-
-                    b.Navigation("Tags");
 
                     b.Navigation("UserEventAttendances");
                 });

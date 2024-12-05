@@ -32,8 +32,8 @@ namespace STAREvents.Data.Models
         [MaxLength(MaxDescriptionLength)]
         [MinLength(MinDescriptionLength)]
         public string Description { get; set; } = null!;
-        [MaxLength(MaxImgUrlLength)]
-        public string ImageUrl { get; set; } = string.Empty;
+        [Required]
+        public string ImageUrl { get; set; } = null!;
         [Required]
         public DateTime CreatedOnDate { get; set; }
         [Required]
@@ -53,8 +53,7 @@ namespace STAREvents.Data.Models
         [ForeignKey("OrganizerID")]
         public ApplicationUser Organizer { get; set; } = null!;
 
-
-        public int CategoryID { get; set; }
+        public Guid CategoryID { get; set; }
 
         [ForeignKey("CategoryID")]
         public Category Category { get; set; } = null!;
@@ -63,10 +62,8 @@ namespace STAREvents.Data.Models
             = new HashSet<EventCategory>();
         public ICollection<Comment> EventComments { get; set; }
             = new HashSet<Comment>();
-        public ICollection<Tag> Tags { get; set; } 
-            = new HashSet<Tag>();
         public ICollection<UserEventAttendance> UserEventAttendances { get; set; } 
             = new HashSet<UserEventAttendance>();
-
+        
     }
 }

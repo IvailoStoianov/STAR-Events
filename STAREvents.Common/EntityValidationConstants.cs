@@ -16,6 +16,9 @@ namespace STAREvents.Common
             public const int MinDescriptionLength = 30;
             public const int MaxImgUrlLength = 2048;
             public const string DecimalType = "decimal(18,2)";
+            public const int MaxImageSize = 2 * 1024 * 1024; // 2 MB
+            public const int MaxCapacity = 100000;
+            public const int MinCapacity = 2;
         }
 
         public static class VenueConstants
@@ -67,6 +70,10 @@ namespace STAREvents.Common
         {
             public const int MaxTagLength = 50;
             public const int MinTagLength = 1;
+        }
+        public static class DateFormatConstants
+        {
+            public const string EventDateTimeFormat = "yyyy-MM-ddTHH:mm";
         }
     }
 }

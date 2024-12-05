@@ -11,8 +11,7 @@ namespace STAREvents.Common
         public static class SeedDataPaths
         {
             public const string CategoriesSeedPath = @"SeedData\categories.json";
-            public const string VenuesSeedPath = @"SeedData\venues.json";
-            public const string OrganizersSeedPath = @"SeedData\organizers.json";
+            public const string EventsSeedPath = @"SeedData\events.json";
         }
     }
 }

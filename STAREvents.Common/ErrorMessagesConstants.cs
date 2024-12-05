@@ -30,6 +30,7 @@ namespace STAREvents.Common
             public const string FailedToChangePassword = "Failed to change password.";
             public const string InvalidImageFormat = "Invalid image format. Only JPEG, PNG, and GIF are allowed.";
             public const string ProfilePictureSizeExceeded = "File size exceeds {0} KB.";
+            public const string PasswordsAreRequired = "Current password and new password must be provided.";
         }
         public static class ProfileControllerErrorMessages
         {
@@ -38,6 +39,23 @@ namespace STAREvents.Common
             public const string EditFormLoadError = "An error occurred while loading the edit form.";
             public const string IncorrectCurrentPasswordError = "The current password is incorrect.";
             public const string UpdateProfileError = "An error occurred while updating the profile.";
+        }
+        public static class CreateEventsServiceErrorMessages
+        {
+            public const string ImageRequired = "Image is required.";
+            public const string ImageSizeExceeded = "File size exceeds {0} MB.";
+            public const string EventCreationError = "An error occurred while creating the event.";
+        }
+        public static class CreateEventInputModelErrorMessages
+        {
+            public const string EventNameRequired = "Event name is required.";
+            public const string EventNameMaxLength = "Event name cannot exceed 100 characters.";
+            public const string DescriptionRequired = "Description is required.";
+            public const string DescriptionMaxLength = "Description cannot exceed 1000 characters.";
+            public const string StartDateRequired = "Start date is required.";
+            public const string EndDateRequired = "End date is required.";
+            public const string CapacityRequired = "Capacity is required.";
+            public const string CapacityRange = "Capacity must be at least 1.";
         }
     }
 }

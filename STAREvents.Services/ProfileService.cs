@@ -129,9 +129,14 @@ namespace STAREvents.Services.Data
             {
                 throw new KeyNotFoundException(UserNotFound);
             }
-            
+
+            if (string.IsNullOrEmpty(model.CurrentPassword) || string.IsNullOrEmpty(model.NewPassword))
+            {
+                throw new ArgumentException(PasswordsAreRequired);
+            }
+
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-            
+
             if (result.Succeeded)
             {
                 await signInManager.RefreshSignInAsync(user);

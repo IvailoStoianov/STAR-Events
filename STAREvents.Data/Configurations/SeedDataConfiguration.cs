@@ -11,6 +11,7 @@ namespace STAREvents.Data.Configurations
         public static void ApplySeedData(ModelBuilder modelBuilder)
         {
             modelBuilder.SeedDataFromJson<Category>(CategoriesSeedPath);
+            modelBuilder.SeedDataFromJson<Event>(EventsSeedPath);
         }
     }
 }

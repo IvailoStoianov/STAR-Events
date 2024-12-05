@@ -11,8 +11,12 @@ namespace STAREvents.Data.Models
 {
     public class Category
     {
+        public Category()
+        {
+            CategoryID = Guid.NewGuid();
+        }
         [Key]
-        public int CategoryID { get; set; }
+        public Guid CategoryID { get; set; }
 
         [Required]
         [MaxLength(MaxNameLength)]

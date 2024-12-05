@@ -15,7 +15,7 @@ namespace STAREvents.Data.Models
         public Event Event { get; set; } = null!;
 
 
-        public int CategoryID { get; set; }
+        public Guid CategoryID { get; set; }
         [ForeignKey("CategoryID")]
         public Category Category { get; set; } = null!;
     }

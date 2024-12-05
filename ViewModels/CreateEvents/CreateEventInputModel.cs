@@ -1,40 +1,64 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using STAREvents.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static STAREvents.Common.EntityValidationConstants.DateFormatConstants;
+using static STAREvents.Common.ErrorMessagesConstants.CreateEventInputModelErrorMessages;
+using static STAREvents.Common.EntityValidationConstants.EventConstants;
 
 namespace STAREvents.Web.ViewModels.CreateEvents
 {
     public class CreateEventInputModel
     {
-        [Required(ErrorMessage = "Event name is required.")]
-        [MaxLength(100, ErrorMessage = "Event name cannot exceed 100 characters.")]
+        public CreateEventInputModel()
+        {
+            CreatedOnDate = DateTime.UtcNow;
+            StartDate = DateTime.UtcNow;
+            EndDate = DateTime.UtcNow;
+        }
+
+        [Required(ErrorMessage = EventNameRequired)]
+        [MaxLength(100, ErrorMessage = EventNameMaxLength)]
         [Display(Name = "Event Name")]
         public string Name { get; set; } = null!;
 
-        [Required(ErrorMessage = "Description is required.")]
-        [MaxLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
+        [Required(ErrorMessage = DescriptionRequired)]
+        [MaxLength(1000, ErrorMessage = DescriptionMaxLength)]
         [Display(Name = "Description")]
         public string Description { get; set; } = null!;
 
-        [Required(ErrorMessage = "Start date is required.")]
+        [Required]
+        [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
         [DataType(DataType.DateTime)]
+        public DateTime CreatedOnDate { get; set; }
+
+        [Required(ErrorMessage = StartDateRequired)]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
         [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
 
-        [Required(ErrorMessage = "End date is required.")]
+        [Required(ErrorMessage = EndDateRequired)]
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
 
-        [Required(ErrorMessage = "Capacity is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Capacity must be at least 1.")]
+        [Required(ErrorMessage = CapacityRequired)]
+        [Range(MinCapacity, MaxCapacity, ErrorMessage = CapacityRange)]
         [Display(Name = "Capacity")]
         public int Capacity { get; set; }
 
+        [Required]
         [Display(Name = "Event Image")]
-        public byte[] Image { get; set; } = Array.Empty<byte>();
+        public IFormFile Image { get; set; } = null!;
+
+        [Required]
+        [Display(Name = "Event Category")]
+        public Guid CategoryId { get; set; }
+
+        public IEnumerable<Category> Categories { get; set; }
+            = new List<Category>();
     }
 }

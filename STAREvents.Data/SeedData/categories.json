@@ -1,122 +1,122 @@
 [
   {
-    "CategoryID": 1,
+    "CategoryId": "d3b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Music"
   },
   {
-    "CategoryID": 2,
+    "CategoryId": "e4b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Sports"
   },
   {
-    "CategoryID": 3,
+    "CategoryId": "f5b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Technology"
   },
   {
-    "CategoryID": 4,
+    "CategoryId": "a6b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Education"
   },
   {
-    "CategoryID": 5,
+    "CategoryId": "b7b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Health"
   },
   {
-    "CategoryID": 6,
+    "CategoryId": "c8b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Art"
   },
   {
-    "CategoryID": 7,
+    "CategoryId": "d9b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Business"
   },
   {
-    "CategoryID": 8,
+    "CategoryId": "eab07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Science"
   },
   {
-    "CategoryID": 9,
+    "CategoryId": "fbb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Comedy"
   },
   {
-    "CategoryID": 10,
+    "CategoryId": "acb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Travel"
   },
   {
-    "CategoryID": 11,
+    "CategoryId": "bdb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Lifestyle"
   },
   {
-    "CategoryID": 12,
+    "CategoryId": "cec07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Fitness"
   },
   {
-    "CategoryID": 13,
+    "CategoryId": "dfd07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Gaming"
   },
   {
-    "CategoryID": 14,
+    "CategoryId": "e0e07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Cooking"
   },
   {
-    "CategoryID": 15,
+    "CategoryId": "f1f07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "History"
   },
   {
-    "CategoryID": 16,
+    "CategoryId": "a2a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Politics"
   },
   {
-    "CategoryID": 17,
+    "CategoryId": "b3b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Finance"
   },
   {
-    "CategoryID": 18,
+    "CategoryId": "c4c07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Nature"
   },
   {
-    "CategoryID": 19,
+    "CategoryId": "d5d07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Photography"
   },
   {
-    "CategoryID": 20,
+    "CategoryId": "e6e07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Writing"
   },
   {
-    "CategoryID": 21,
+    "CategoryId": "f7f07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Dance"
   },
   {
-    "CategoryID": 22,
+    "CategoryId": "a8a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Film"
   },
   {
-    "CategoryID": 23,
+    "CategoryId": "b9b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Literature"
   },
   {
-    "CategoryID": 24,
+    "CategoryId": "cac07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Environment"
   },
   {
-    "CategoryID": 25,
+    "CategoryId": "dbd07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Social"
   },
   {
-    "CategoryID": 26,
+    "CategoryId": "ece07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Community"
   },
   {
-    "CategoryID": 27,
+    "CategoryId": "fdf07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Theatre"
   },
   {
-    "CategoryID": 28,
+    "CategoryId": "a0a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Networking"
   },
   {
-    "CategoryID": 29,
+    "CategoryId": "b1b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Charity"
   },
   {
-    "CategoryID": 30,
+    "CategoryId": "c2c07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b",
     "Name": "Hobbies"
   }
 ]

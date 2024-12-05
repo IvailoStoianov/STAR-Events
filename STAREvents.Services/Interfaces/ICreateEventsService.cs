@@ -1,4 +1,5 @@
-﻿using STAREvents.Web.ViewModels.CreateEvents;
+﻿using STAREvents.Data.Models;
+using STAREvents.Web.ViewModels.CreateEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace STAREvents.Services.Data.Interfaces
 {
     public interface ICreateEventsService
     {
-        Task CreateEventAsync(CreateEventInputModel model);
+        Task CreateEventAsync(CreateEventInputModel model, Guid userId);
+        Task<IEnumerable<Category>> LoadCategoriesAsync();
     }
 }

@@ -1,0 +1,9 @@
+﻿footer {
+    position: relative !important;
+}
+
+footer.not-full-height {
+    position: absolute !important;
+    bottom: 0;
+    width: 100vw;
+}

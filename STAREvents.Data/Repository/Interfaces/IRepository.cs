@@ -38,5 +38,6 @@ namespace STAREvents.Data.Repository.Interfaces
         bool Update(TType item);
 
         Task<bool> UpdateAsync(TType item);
+        Task<IEnumerable<TId>> GetAllIdsAsync();
     }
 }

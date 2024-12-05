@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace STAREvents.Data.Repository
+﻿namespace STAREvents.Data.Repository
 {
     using System.Linq.Expressions;
 
@@ -145,6 +139,21 @@ namespace STAREvents.Data.Repository
             {
                 return false;
             }
+        }
+        public async Task<IEnumerable<TId>> GetAllIdsAsync()
+        {
+            var idProperty = typeof(TType).GetProperties()
+                .FirstOrDefault(p => p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase) ||
+                                     p.Name.Equals(typeof(TType).Name + "Id", StringComparison.OrdinalIgnoreCase));
+
+            if (idProperty == null)
+            {
+                throw new InvalidOperationException("No ID property found on type " + typeof(TType).Name);
+            }
+
+            return await this.dbSet
+                .Select(e => (TId)idProperty.GetValue(e))
+                .ToListAsync();
         }
     }
 }
