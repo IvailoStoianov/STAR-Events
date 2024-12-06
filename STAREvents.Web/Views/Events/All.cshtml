@@ -27,16 +27,18 @@ else
         @foreach (var eventItem in Model.Events)
         {
             <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="@eventItem.ImageUrl" class="card-img-top" alt="@eventItem.Name" />
-                    <div class="card-body">
-                        <h5 class="card-title">@eventItem.Name</h5>
-                        <p class="card-text">@eventItem.Description</p>
-                        <p class="card-text"><small class="text-muted">@eventItem.StartDate.ToString("g") - @eventItem.EndDate.ToString("g")</small></p>
-                        <p class="card-text"><small class="text-muted">Category: @eventItem.Category.Name</small></p>
-                        <p class="card-text"><small class="text-muted">Capacity: @eventItem.Capacity</small></p>
+                <a asp-controller="Events" asp-action="EventDetails" asp-route-id="@eventItem.EventId" class="text-decoration-none">
+                    <div class="card">
+                        <img src="@eventItem.ImageUrl" class="card-img-top" alt="@eventItem.Name" />
+                        <div class="card-body">
+                            <h5 class="card-title">@eventItem.Name</h5>
+                            <p class="card-text">@eventItem.Description</p>
+                            <p class="card-text"><small class="text-muted">@eventItem.StartDate.ToString("g") - @eventItem.EndDate.ToString("g")</small></p>
+                            <p class="card-text"><small class="text-muted">Category: @eventItem.Category.Name</small></p>
+                            <p class="card-text"><small class="text-muted">Capacity: @eventItem.Capacity</small></p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         }
     </div>

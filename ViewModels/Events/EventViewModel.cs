@@ -20,5 +20,7 @@ namespace STAREvents.Web.ViewModels.Events
         public Guid OrganizerID { get; set; }
         public ApplicationUser Organizer { get; set; } = null!;
         public Category Category { get; set; } = null!;
+        public List<CommentViewModel> Comments { get; set; }
+        public bool HasJoined { get; set; }
     }
 }
