@@ -1,4 +1,5 @@
-﻿using STAREvents.Data.Models;
+﻿using Microsoft.AspNetCore.Http;
+using STAREvents.Data.Models;
 using STAREvents.Services.Mapping;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace STAREvents.Web.ViewModels.Profile
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public byte[]? ProfilePicture { get; set; }
+        public string ProfilePictureUrl { get; set; }
+        public IFormFile ProfilePicture { get; set; }
         public string Username { get; set; } = null!;
         public string Email { get; set; } = null!;
     }

@@ -37,7 +37,8 @@ public class EventsService : IEventsService
 
         var filteredEvents = events
             .Where(e => string.IsNullOrEmpty(searchTerm) || e.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-            .Where(e => !selectedCategory.HasValue || e.Category.CategoryID == selectedCategory);
+            .Where(e => !selectedCategory.HasValue || e.Category.CategoryID == selectedCategory)
+            .Where(e => e.isDeleted == false);
 
         filteredEvents = sortOption switch
         {

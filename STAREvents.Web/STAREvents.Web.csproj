@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\event-images\" />
+    <Folder Include="wwwroot\images\profile-pictures\" />
   </ItemGroup>
 
 </Project>

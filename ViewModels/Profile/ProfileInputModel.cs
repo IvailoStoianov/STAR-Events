@@ -23,9 +23,8 @@ namespace STAREvents.Web.ViewModels.Profile
         [MinLength(MinLastNameLength, ErrorMessage = MinLength)]
         public string LastName { get; set; } = string.Empty;
 
-        //[MaxLength(MaxImgUrlLength, ErrorMessage = MaxLength)]
-        //[Url(ErrorMessage = InvalidUrl)]
-        public byte[] ProfilePicture { get; set; } = Array.Empty<byte>();
+        public string ProfilePictureUrl { get; set; } = "/images/default-pfp.svg";
+        public IFormFile? ProfilePicture { get; set; } 
 
         [Required]
         [MaxLength(MaxUsernameLength, ErrorMessage = MaxLength)]

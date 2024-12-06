@@ -60,6 +60,7 @@ namespace STAREvents.Common
             public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$";
             public const string PhoneNumberRegex = @"^(\+\d{1,3}[- ]?)?\d{10}$";
             public const int MaxProfilePictureSize = 100 * 1024; // 100 KB
+            public const string DefaultProfilePictureUrl = "/images/default-pfp.svg";
         }
         public static class CommentConstants
         {

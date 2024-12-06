@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
 using Microsoft.EntityFrameworkCore;
 
-//TODO Add [Comment]
-
 namespace STAREvents.Data.Models
 {
     public class Event

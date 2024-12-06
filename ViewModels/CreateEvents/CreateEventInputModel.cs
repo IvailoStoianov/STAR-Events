@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using static STAREvents.Common.EntityValidationConstants.DateFormatConstants;
 using static STAREvents.Common.ErrorMessagesConstants.CreateEventInputModelErrorMessages;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
+using STAREvents.Web.Common.Custom_Attributes;
 
 namespace STAREvents.Web.ViewModels.CreateEvents
 {
@@ -42,6 +43,7 @@ namespace STAREvents.Web.ViewModels.CreateEvents
         [Required(ErrorMessage = EndDateRequired)]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
+        [DateRange("StartDate", ErrorMessage = EndDateBeforeStartDate)]
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
 

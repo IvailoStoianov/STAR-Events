@@ -54,6 +54,7 @@ namespace STAREvents.Common
             public const string DescriptionMaxLength = "Description cannot exceed 1000 characters.";
             public const string StartDateRequired = "Start date is required.";
             public const string EndDateRequired = "End date is required.";
+            public const string EndDateBeforeStartDate = "End date must be after start date.";
             public const string CapacityRequired = "Capacity is required.";
             public const string CapacityRange = "Capacity must be at least 1.";
         }

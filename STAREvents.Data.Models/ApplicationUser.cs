@@ -14,7 +14,7 @@ namespace STAREvents.Data.Models
         public ApplicationUser()
         {
             this.Id = Guid.NewGuid();
-            ProfilePicture = GetDefaultProfilePicture();
+            this.ProfilePictureUrl = DefaultProfilePictureUrl;
         }
         [Required]
         [MaxLength(MaxFirstNameLength)]
@@ -26,7 +26,7 @@ namespace STAREvents.Data.Models
         [MinLength(MinLastNameLength)]
         public string LastName { get; set; } = null!;
 
-        public byte[] ProfilePicture { get; set; }
+        public string ProfilePictureUrl { get; set; }
 
         public ICollection<Event> OrganizedEvents { get; set; }
             = new HashSet<Event>();
@@ -34,10 +34,5 @@ namespace STAREvents.Data.Models
             = new HashSet<UserEventAttendance>();
         public ICollection<Comment> UserComments { get; set; }
             = new HashSet<Comment>();
-        private byte[] GetDefaultProfilePicture()
-        {
-            var defaultImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/default-pfp.svg");
-            return File.ReadAllBytes(defaultImagePath);
-        }
     }
 }

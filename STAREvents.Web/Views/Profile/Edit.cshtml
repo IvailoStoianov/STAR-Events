@@ -19,11 +19,9 @@
                     <form id="editProfileForm" method="post" enctype="multipart/form-data" asp-action="Edit">
                         <div class="row mb-3">
                             <div class="col-md-4 profile-picture-container text-center">
-                                @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
+                                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
                                 {
-                                    var base64 = Convert.ToBase64String(Model.ProfilePicture);
-                                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-                                    <img id="profile-picture" src="@imgSrc" alt="Profile Picture" class="profile-picture mb-3">
+                                    <img id="profile-picture" src="@Model.ProfilePictureUrl" alt="Profile Picture" class="profile-picture mb-3" >
                                 }
                                 else
                                 {
@@ -33,8 +31,7 @@
                             <div class="col-md-8">
                                 <div class="form-group mb-3">
                                     <label class="profile-label">Profile Picture</label>
-                                    <input type="file" id="profilePictureFile" class="form-control" />
-                                    <input type="hidden" asp-for="ProfilePicture" id="profilePicture" />
+                                    <input type="file" id="profilePictureFile" class="form-control" asp-for="ProfilePicture" />
                                     <span class="text-danger" id="fileSizeError"></span>
                                 </div>
                                 <div class="form-group mb-3">
@@ -74,4 +71,5 @@
     <script src="~/js/profile.js" asp-append-version="true"></script>
     <script src="~/js/edit-form.js" asp-append-version="true"></script>
 }
+
 

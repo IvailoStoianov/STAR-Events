@@ -55,6 +55,8 @@ namespace STAREvents.Web
             builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(IBaseService).Assembly);
 
+            builder.Services.AddHostedService<EventCleanupService>();
+
 
             var app = builder.Build();
 
