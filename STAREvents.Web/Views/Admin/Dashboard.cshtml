@@ -1,0 +1,203 @@
+﻿@model STAREvents.Web.ViewModels.Admin.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    body {
+        background-color: #F7CF47;
+        font-family: Arial, sans-serif;
+    }
+
+    h2, h3 {
+        color: black;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .nav-tabs {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .nav-tabs .nav-link {
+            color: black;
+            background-color: white;
+            border: 1px solid black;
+            margin: 0 5px;
+        }
+
+            .nav-tabs .nav-link.active {
+                color: white;
+                background-color: black;
+            }
+
+    .table {
+        margin-top: 20px;
+        background-color: #F0F0F0; /* Lighter background color */
+        border: 1px solid black;
+    }
+
+        .table th, .table td {
+            color: black;
+            border: 1px solid black;
+        }
+
+    .btn-delete {
+        background-color: red;
+        border-color: red;
+        color: white;
+        margin: 0 5px;
+    }
+
+    .btn-recover {
+        background-color: blue;
+        border-color: blue;
+        color: white;
+        margin: 0 5px;
+    }
+
+    .statistics {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+        .statistics .stat-item {
+            background-color: white;
+            border: 1px solid black;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+        }
+
+            .statistics .stat-item h4 {
+                margin-bottom: 10px;
+                color: black;
+            }
+
+            .statistics .stat-item p {
+                font-size: 1.2em;
+                color: black;
+            }
+
+    footer.not-full-height {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
+
+<h2>Admin Dashboard</h2>
+
+<ul class="nav nav-tabs" id="adminTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="events-tab" data-bs-toggle="tab" href="#events" role="tab" aria-controls="events" aria-selected="true">Events</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="users-tab" data-bs-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">Users</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="statistics-tab" data-bs-toggle="tab" href="#statistics" role="tab" aria-controls="statistics" aria-selected="false">Statistics</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="adminTabContent">
+    <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
+        <h3>All Events</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Organizer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eventItem in Model.Events)
+                {
+                    <tr>
+                        <td>@eventItem.Name</td>
+                        <td>@eventItem.Organizer.UserName</td>
+                        <td>
+                            @if (eventItem.isDeleted == false)
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="DeleteEvent" asp-route-id="@eventItem.EventId" class="d-inline">
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="RecoverEvent" asp-route-id="@eventItem.EventId" class="d-inline">
+                                    <button type="submit" class="btn-recover">Recover</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+        <h3>All Users</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>
+                            @if (user.IsDeleted == false)
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@user.UserId" class="d-inline">
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="RecoverUser" asp-route-id="@user.UserId" class="d-inline">
+                                    <button type="submit" class="btn-recover">Recover</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="statistics" role="tabpanel" aria-labelledby="statistics-tab">
+        <h3>Statistics</h3>
+        <div class="statistics">
+            <div class="stat-item">
+                <h4>Total Events</h4>
+                <p>@Model.TotalEvents</p>
+            </div>
+            <div class="stat-item">
+                <h4>Total Users</h4>
+                <p>@Model.TotalUsers</p>
+            </div>
+            <div class="stat-item">
+                <h4>Upcoming Events</h4>
+                <p>@Model.UpcomingEvents</p>
+            </div>
+            <div class="stat-item">
+                <h4>Past Events</h4>
+                <p>@Model.PastEvents</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+}

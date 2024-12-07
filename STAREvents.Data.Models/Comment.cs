@@ -36,5 +36,8 @@ namespace STAREvents.Data.Models
 
         [Required]
         public DateTime PostedDate { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        public bool isDeleted { get; set; } = false;
     }
 }

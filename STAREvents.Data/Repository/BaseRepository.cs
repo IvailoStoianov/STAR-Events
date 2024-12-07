@@ -155,5 +155,17 @@
                 .Select(e => (TId)idProperty.GetValue(e))
                 .ToListAsync();
         }
+        public async Task<bool> DeleteByIdAsync(TId id)
+        {
+            var entity = await this.GetByIdAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            this.dbSet.Remove(entity);
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

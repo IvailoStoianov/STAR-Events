@@ -39,5 +39,6 @@ namespace STAREvents.Data.Repository.Interfaces
 
         Task<bool> UpdateAsync(TType item);
         Task<IEnumerable<TId>> GetAllIdsAsync();
+        Task<bool> DeleteByIdAsync(TId id);
     }
 }

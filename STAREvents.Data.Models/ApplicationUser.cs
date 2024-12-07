@@ -27,6 +27,8 @@ namespace STAREvents.Data.Models
         public string LastName { get; set; } = null!;
 
         public string ProfilePictureUrl { get; set; }
+        [Required]
+        public bool isDeleted { get; set; } = false;
 
         public ICollection<Event> OrganizedEvents { get; set; }
             = new HashSet<Event>();
