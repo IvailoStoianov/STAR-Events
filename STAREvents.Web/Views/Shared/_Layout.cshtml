@@ -33,10 +33,10 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="MyEvents">My Events</a>
+                                <a class="nav-link" asp-area="" asp-controller="MyEvents" asp-action="All">My Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="CreateEvents" asp-action="Create">Create My Event</a>
+                                <a class="nav-link" asp-area="" asp-controller="CreateEvents" asp-action="Create">Create</a>
                             </li>
                         }
                     </ul>

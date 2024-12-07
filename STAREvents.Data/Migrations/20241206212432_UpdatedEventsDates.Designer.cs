@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STAREvents.Web.Data;
 
@@ -11,9 +12,11 @@ using STAREvents.Web.Data;
 namespace STAREvents.Data.Migrations
 {
     [DbContext(typeof(STAREventsDbContext))]
-    partial class STAREventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206212432_UpdatedEventsDates")]
+    partial class UpdatedEventsDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -436,11 +439,6 @@ namespace STAREvents.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
@@ -493,7 +491,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a1a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 100,
                             CategoryID = new Guid("a0a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -509,7 +506,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a2a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 200,
                             CategoryID = new Guid("a2a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -525,7 +521,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a3a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 150,
                             CategoryID = new Guid("a8a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -541,7 +536,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a4a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 50,
                             CategoryID = new Guid("a6b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -557,7 +551,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a5a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 80,
                             CategoryID = new Guid("acb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -573,7 +566,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a6a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 120,
                             CategoryID = new Guid("b1b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -589,7 +581,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a7a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 70,
                             CategoryID = new Guid("b3b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -605,7 +596,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a8a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 90,
                             CategoryID = new Guid("b7b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -621,7 +611,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("a9a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 60,
                             CategoryID = new Guid("b9b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -637,7 +626,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b0a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 200,
                             CategoryID = new Guid("bdb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -653,7 +641,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b1a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 100,
                             CategoryID = new Guid("c8b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -669,7 +656,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b2a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 300,
                             CategoryID = new Guid("d3b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -685,7 +671,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b3a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 150,
                             CategoryID = new Guid("d9b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -701,7 +686,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b4a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 200,
                             CategoryID = new Guid("e4b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -717,7 +701,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b5a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 100,
                             CategoryID = new Guid("eab07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -733,7 +716,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b6a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 150,
                             CategoryID = new Guid("f5b07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -749,7 +731,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b7a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 100,
                             CategoryID = new Guid("fbb07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -765,7 +746,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b8a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 50,
                             CategoryID = new Guid("c2c07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -781,7 +761,6 @@ namespace STAREvents.Data.Migrations
                         new
                         {
                             EventId = new Guid("b9a07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
-                            Address = "Ndk, Bulgaria Blvd, 1463 Sofia",
                             Capacity = 30,
                             CategoryID = new Guid("c4c07384-d9a0-4e6b-8a1d-4f4b8f8b8f8b"),
                             CreatedOnDate = new DateTime(2025, 10, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),

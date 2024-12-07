@@ -11,7 +11,7 @@ using static STAREvents.Common.ErrorMessagesConstants.CreateEventsServiceErrorMe
 
 namespace STAREvents.Services.Data
 {
-    public class CreateEventsService : ICreateEventsService
+    public class CreateEventsService : BaseService, ICreateEventsService
     {
         private readonly IRepository<Event, object> eventRepository;
         private readonly IRepository<Category, object> categoryRepository;
@@ -66,6 +66,7 @@ namespace STAREvents.Services.Data
                     ImageUrl = imageUrl,
                     OrganizerID = userId,
                     CategoryID = model.CategoryId,
+                    Address = model.Address,
                     CreatedOnDate = DateTime.UtcNow
                 };
 

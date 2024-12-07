@@ -33,6 +33,10 @@ namespace STAREvents.Data.Models
         [Required]
         public string ImageUrl { get; set; } = null!;
         [Required]
+        [MaxLength(AddressMaxLength)]
+        [MinLength(AddressMinLength)]
+        public string Address { get; set; } = null!;
+        [Required]
         public DateTime CreatedOnDate { get; set; }
         [Required]
         public DateTime StartDate { get; set; }

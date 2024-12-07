@@ -11,6 +11,7 @@ namespace STAREvents.Web.ViewModels.Events
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
+        public string Address { get; set; } = null!;
         public DateTime CreatedOnDate { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

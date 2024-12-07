@@ -1,7 +1,7 @@
-﻿@model CreateEventInputModel
+﻿@model EditEventInputModel
 
 @{
-    ViewData["Title"] = "Create Event";
+    ViewData["Title"] = "Edit Event";
 }
 
 @section Styles {
@@ -14,10 +14,11 @@
         <div class="col-md-8">
             <div class="card event-card">
                 <div class="card-header event-card-header">
-                    <h2 class="mb-0">Create Event</h2>
+                    <h2 class="mb-0">Edit Event</h2>
                 </div>
                 <div class="card-body event-card-body">
-                    <form id="createEventForm" method="post" enctype="multipart/form-data" asp-action="Create">
+                    <form id="editEventForm" method="post" enctype="multipart/form-data" asp-action="Edit">
+                        <input type="hidden" asp-for="EventId" />
                         <div class="form-group mb-3">
                             <label asp-for="Name" class="event-label"></label>
                             <input asp-for="Name" class="form-control" />
@@ -56,13 +57,13 @@
                             <span asp-validation-for="CategoryId" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-3">
-                            <label asp-for="Address" class="event-label">Address</label>
+                            <label asp-for="Address" class="event-label">Event Location</label>
                             <input asp-for="Address" class="form-control" />
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn create-event-btn">Create Event</button>
-                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn create-event-btn">Save Changes</button>
+                            <a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>

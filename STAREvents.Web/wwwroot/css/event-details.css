@@ -1,0 +1,76 @@
+﻿body {
+    background-color: #F7CF47;
+}
+
+.card {
+    background-color: #f8f9fa;
+    border: 1px solid #000;
+}
+
+.card-title, .card-text {
+    color: #000;
+}
+
+.btn-primary {
+    background-color: #000;
+    border-color: #000;
+}
+
+.btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+}
+
+.btn-danger {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+.btn-danger:hover {
+    background-color: #cc0000;
+    border-color: #cc0000;
+}
+
+.btn-warning {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+.btn-warning:hover {
+    background-color: #e6b800;
+    border-color: #e6b800;
+}
+
+.form-control {
+    border: 1px solid #000;
+}
+
+.media {
+    background-color: #f8f9fa;
+    border: 1px solid #000;
+}
+
+.media-body {
+    color: #000;
+}
+
+.media img {
+    border: 1px solid #000;
+}
+
+.form-group textarea {
+    margin-bottom: 1rem;
+}
+
+.event-image {
+    padding: 1rem;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+}
+
+.comment-header img {
+    margin-right: 10px;
+}

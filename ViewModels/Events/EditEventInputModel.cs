@@ -1,24 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
-using STAREvents.Data.Models;
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel.DataAnnotations;
+
+using STAREvents.Data.Models;
 using static STAREvents.Common.EntityValidationConstants.DateFormatConstants;
 using static STAREvents.Common.ErrorMessagesConstants.CreateEventInputModelErrorMessages;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
 using STAREvents.Web.Common.Custom_Attributes;
 
-namespace STAREvents.Web.ViewModels.CreateEvents
+namespace STAREvents.Web.ViewModels.Events
 {
-    public class CreateEventInputModel
+    public class EditEventInputModel
     {
-        public CreateEventInputModel()
-        {
-            CreatedOnDate = DateTime.UtcNow;
-            StartDate = DateTime.UtcNow;
-            EndDate = DateTime.UtcNow;
-        }
-
+        [Required]
+        public Guid EventId { get; set; }
         [Required(ErrorMessage = EventNameRequired)]
         [MaxLength(100, ErrorMessage = EventNameMaxLength)]
         [Display(Name = "Event Name")]
@@ -33,7 +28,7 @@ namespace STAREvents.Web.ViewModels.CreateEvents
         [Display(Name = "Address")]
         [MaxLength(AddressMaxLength)]
         [MinLength(AddressMinLength)]
-        public string Address { get; set; } = null!;    
+        public string Address { get; set; } = null!;
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
@@ -58,9 +53,8 @@ namespace STAREvents.Web.ViewModels.CreateEvents
         [Display(Name = "Capacity")]
         public int Capacity { get; set; }
 
-        [Required]
         [Display(Name = "Event Image")]
-        public IFormFile Image { get; set; } = null!;
+        public IFormFile? Image { get; set; }
 
         [Required]
         [Display(Name = "Event Category")]

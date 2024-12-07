@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
+using STAREvents.Services.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace STAREvents.Services.Data
 {
-    public class EventCleanupService : BackgroundService
+    public class EventCleanupService : BackgroundService, IEventCleanupService
     {
         private readonly IServiceProvider _serviceProvider;
 

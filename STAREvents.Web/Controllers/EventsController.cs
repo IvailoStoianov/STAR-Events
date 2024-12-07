@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using STAREvents.Services.Data.Interfaces;
+using STAREvents.Web.ViewModels.Events;
 
 public class EventsController : Controller
 {
@@ -59,6 +61,21 @@ public class EventsController : Controller
     public async Task<IActionResult> DeleteComment(Guid commentId, Guid eventId)
     {
         await _eventsService.DeleteCommentAsync(commentId, User.Identity.Name);
+        return RedirectToAction("EventDetails", new { id = eventId });
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid eventId)
+    {
+        EditEventInputModel model = await _eventsService.GetEditEventAsync(eventId);
+        return View(model);
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Edit(EditEventInputModel model)
+    {
+        Guid eventId = await _eventsService.EditEventAsync(model);
         return RedirectToAction("EventDetails", new { id = eventId });
     }
 }

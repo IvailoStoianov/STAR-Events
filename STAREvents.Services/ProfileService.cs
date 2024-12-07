@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace STAREvents.Services.Data
 {
-    public class ProfileService : IProfileService
+    public class ProfileService : BaseService, IProfileService
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
