@@ -58,5 +58,10 @@ namespace STAREvents.Common
             public const string CapacityRequired = "Capacity is required.";
             public const string CapacityRange = "Capacity must be at least 1.";
         }
+        public static class ImageRelatedErrorMessages
+        {
+            public const string InvalidImageFormat = "Invalid image format. Only JPG, JPEG, PNG, and SVG are allowed.";
+            public const string ImageSizeExceeded = "File size exceeds {0} MB.";
+        }
     }
 }

@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Profile;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using static STAREvents.Common.EntityValidationConstants.AllowedExtenstions;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
-using static STAREvents.Common.EntityValidationConstants.ApplicationUserConstants;
-using Microsoft.AspNetCore.Http;
+using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
 
 namespace STAREvents.Services.Data
 {
@@ -126,7 +123,23 @@ namespace STAREvents.Services.Data
             // Update profile picture if provided
             if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
             {
-                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images/profile-pictures");
+                // Validate file type
+                var allowedExtensions = ImageExtensions;
+                var extension = Path.GetExtension(model.ProfilePicture.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    throw new InvalidOperationException(InvalidImageFormat);
+                }
+
+                // Validate MIME type
+                var allowedMimeTypes = AllowedMimeTypes;
+                if (!allowedMimeTypes.Contains(model.ProfilePicture.ContentType))
+                {
+                    throw new InvalidOperationException(InvalidImageFormat);
+                }
+
+                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultProfilePicturePath);
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfilePicture.FileName;
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
@@ -135,7 +148,7 @@ namespace STAREvents.Services.Data
                     await model.ProfilePicture.CopyToAsync(fileStream);
                 }
 
-                user.ProfilePictureUrl = $"/images/profile-pictures/{uniqueFileName}";
+                user.ProfilePictureUrl = $"/{DefaultProfilePicturePath}/{uniqueFileName}";
             }
 
             var result = await userManager.UpdateAsync(user);

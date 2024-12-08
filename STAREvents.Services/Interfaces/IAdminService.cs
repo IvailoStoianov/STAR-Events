@@ -19,6 +19,8 @@ namespace STAREvents.Services.Data.Interfaces
             Task SoftDeleteUserAsync(Guid userId);
             Task RecoverUserAsync(Guid userId);
             Task RecoverEventAsync(Guid id);
+            Task AddAdminRole(Guid userId);
+            Task RemoveAdminRole(Guid userId);
         }
     }
 

@@ -93,6 +93,9 @@ namespace STAREvents.Web
             app.UseAuthorization();
 
             app.MapControllerRoute(
+                name: "Areas",
+                pattern: "{area:exists}/{controller=Admin}/{action=Dashboard}/{id?}");
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
@@ -103,7 +106,8 @@ namespace STAREvents.Web
                 var services = scope.ServiceProvider;
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-                await RoleInitializer.InitializeAsync(userManager, roleManager);
+                var configuration = services.GetRequiredService<IConfiguration>();
+                await RoleInitializer.InitializeAsync(userManager, roleManager, configuration);
             }
 
             app.Run();

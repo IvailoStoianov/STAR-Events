@@ -19,5 +19,6 @@ namespace STAREvents.Web.ViewModels.Profile
         public string Username { get; set; } = null!;
         public string Email { get; set; } = null!;
         public bool IsDeleted { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

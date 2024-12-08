@@ -53,13 +53,22 @@ namespace STAREvents.Services.Data
         public async Task<List<ProfileViewModel>> GetAllUsersAsync()
         {
             var users = await userManager.Users.ToListAsync();
-            return users.Select(u => new ProfileViewModel
+
+            var userViewModels = new List<ProfileViewModel>();
+
+            foreach (var user in users)
             {
-                UserId = u.Id.ToString(),
-                Username = u.UserName,
-                Email = u.Email,
-                IsDeleted = u.isDeleted
-            }).ToList();
+                userViewModels.Add(new ProfileViewModel
+                {
+                    UserId = user.Id.ToString(),
+                    Username = user.UserName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    IsDeleted = user.isDeleted,
+                    IsAdmin = await userManager.IsInRoleAsync(user, "Admin")
+                });
+            }
+
+            return userViewModels;
         }
 
         public async Task<int> GetTotalEventsAsync()
@@ -152,6 +161,23 @@ namespace STAREvents.Services.Data
             {
                 user.isDeleted = false;
                 await userManager.UpdateAsync(user);
+            }
+        }
+        public async Task RemoveAdminRole(Guid userId)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user != null)
+            {
+                await userManager.RemoveFromRoleAsync(user, "Admin");
+            }
+        }
+
+        public async Task AddAdminRole(Guid userId)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user != null)
+            {
+                await userManager.AddToRoleAsync(user, "Admin");
             }
         }
     }

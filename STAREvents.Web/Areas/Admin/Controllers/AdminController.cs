@@ -8,8 +8,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace STAREvents.Web.Controllers
+namespace STAREvents.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
@@ -51,6 +52,18 @@ namespace STAREvents.Web.Controllers
         public async Task<IActionResult> RecoverUser(Guid id)
         {
             await _adminService.RecoverUserAsync(id);
+            return RedirectToAction(nameof(Dashboard));
+        }
+        [HttpPost]
+        public async Task<IActionResult> MakeAdmin(Guid id)
+        {
+            await _adminService.AddAdminRole(id);
+            return RedirectToAction(nameof(Dashboard));
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveAdmin(Guid id)
+        {
+            await _adminService.RemoveAdminRole(id);
             return RedirectToAction(nameof(Dashboard));
         }
     }

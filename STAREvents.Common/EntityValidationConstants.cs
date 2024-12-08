@@ -78,5 +78,10 @@ namespace STAREvents.Common
         {
             public const string EventDateTimeFormat = "yyyy-MM-ddTHH:mm";
         }
+        public static class AllowedExtenstions
+        {
+            public static readonly string[] ImageExtensions = { ".jpg", ".jpeg", ".png", ".svg" };
+            public static readonly string[] AllowedMimeTypes = new[] { "image/jpeg", "image/png", "image/svg" };
+    }
     }
 }

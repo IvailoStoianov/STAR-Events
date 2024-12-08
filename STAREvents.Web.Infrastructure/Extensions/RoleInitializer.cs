@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using STAREvents.Data.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace STAREvents.Web.Infrastructure.Extensions
 {
     public static class RoleInitializer
     {
-        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration)
         {
-            string adminEmail = "admin@example.com";
-            string password = "Admin123!";
+            string adminEmail = configuration["AdminCredentials:Email"];
+            string password = configuration["AdminCredentials:Password"];
+
             if (await roleManager.FindByNameAsync("Admin") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole<Guid> { Name = "Admin" });

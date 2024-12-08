@@ -169,6 +169,18 @@
                                     <button type="submit" class="btn-recover">Recover</button>
                                 </form>
                             }
+                            @if (user.IsAdmin == false)
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="MakeAdmin" asp-route-id="@user.UserId" class="d-inline">
+                                    <button type="submit" class="btn-recover">Make Admin</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="RemoveAdmin" asp-route-id="@user.UserId" class="d-inline">
+                                    <button type="submit" class="btn-recover">Remove Admin</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }
