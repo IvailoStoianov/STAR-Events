@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Error 404";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/error.css" asp-append-version="true" />
+}
+
+<div id="custom-error-page">
+    <div class="custom-error-container">
+        <img class="custom-logo" src="~/images/logo-main.svg" alt="STAREvents Logo" />
+        <div class="custom-error-title">404</div>
+        <div class="custom-error-message">Oops! The page you are looking for cannot be found.</div>
+        <a class="custom-home-button" asp-area="" asp-controller="Home" asp-action="Index">Go to Home</a>
+    </div>
+</div>
+

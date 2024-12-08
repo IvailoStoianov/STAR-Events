@@ -1,0 +1,49 @@
+﻿body {
+    background-color: #F7CF47;
+}
+
+#custom-error-page {
+    font-family: Arial, sans-serif;
+    color: black;
+    text-align: center;
+    padding: 50px;
+}
+
+.custom-logo {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.custom-error-container {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 30px;
+    display: inline-block;
+}
+
+.custom-error-title {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.custom-error-message {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+}
+
+.custom-home-button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+    .custom-home-button:hover {
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+    }

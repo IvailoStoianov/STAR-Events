@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Error 500";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/error.css" asp-append-version="true" />
+}
+
+<div id="custom-error-page">
+    <div class="custom-error-container">
+        <img class="custom-logo" src="~/images/logo-main.svg" alt="STAREvents Logo" />
+        <div class="custom-error-title">500</div>
+        <div class="custom-error-message">Oops! Something went wrong on our end. Please try again later.</div>
+        <a class="custom-home-button" asp-area="" asp-controller="Home" asp-action="Index">Go to Home</a>
+    </div>
+</div>
+
+

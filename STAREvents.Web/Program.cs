@@ -60,15 +60,6 @@ namespace STAREvents.Web
 
             var app = builder.Build();
 
-            // Add middleware to log requests and responses
-            app.Use(async (context, next) =>
-            {
-                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("Handling request: {RequestPath}", context.Request.Path);
-                await next.Invoke();
-                logger.LogInformation("Finished handling request.");
-            });
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -99,6 +90,8 @@ namespace STAREvents.Web
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
             // Initialize roles and admin user
             using (var scope = app.Services.CreateScope())
