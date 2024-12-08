@@ -18,5 +18,9 @@ namespace STAREvents.Common
         {
             public const string DefaultProfilePicturePath = "images/profile-pictures";
         }
+        public static class EventPicturePaths
+        {
+            public const string DefaultEventPicturePath = "images/event-images";
+        }
     }
 }

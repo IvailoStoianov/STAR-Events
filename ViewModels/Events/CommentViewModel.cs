@@ -13,5 +13,6 @@ namespace STAREvents.Web.ViewModels.Events
         public string Content { get; set; }
         public DateTime PostedDate { get; set; }
         public ApplicationUser User { get; set; }
+        public bool isDeleted { get; set; }
     }
 }

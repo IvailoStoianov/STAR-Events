@@ -13,8 +13,9 @@ namespace STAREvents.Services.Data.Interfaces
         Task<EventsViewModel> LoadEventAsync(string searchTerm, Guid? selectedCategory, string sortOption, int page = 1, int pageSize = 12);
         Task<EventViewModel> GetEventDetailsAsync(Guid eventId, string userName = "");
         Task AddCommentAsync(Guid eventId, string userName, string content);
-        Task DeleteCommentAsync(Guid commentId, string userName);
+        Task SoftDeleteCommentAsync(Guid commentId, Guid userId);
         Task<EditEventInputModel> GetEditEventAsync(Guid eventId);
         Task<Guid> EditEventAsync(EditEventInputModel model);
+        Task SoftDeleteEventAsync(Guid eventId);
     }
 }

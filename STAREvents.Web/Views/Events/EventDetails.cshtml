@@ -48,7 +48,11 @@
                                     }
                                     @if (User.Identity.Name == Model.Organizer.UserName)
                                     {
-                                        <a href="@Url.Action("Edit", "Events", new { eventId = Model.EventId })" class="btn btn-warning">Edit Event</a>
+                                        <a href="@Url.Action("Edit", "Events", new { eventId = Model.EventId })" class="btn btn-warning mr-2">Edit Event</a>
+                                        <form method="post" asp-action="SoftDeleteEvent" asp-controller="Events" class="mr-2">
+                                            <input type="hidden" name="eventId" value="@Model.EventId" />
+                                            <button type="submit" class="btn btn-danger">Delete Event</button>
+                                        </form>
                                     }
                                 </div>
                             }
@@ -73,24 +77,29 @@
                     }
                     @foreach (var comment in Model.Comments)
                     {
-                        <div class="media mb-3 p-3 border rounded">
-                            <div class="comment-header">
-                                <img src="@comment.User.ProfilePictureUrl" class="rounded-circle" alt="@comment.User.UserName" width="50" height="50" />
-                                <h5 class="mt-0">@comment.User.UserName</h5>
+                        @if(comment.isDeleted == false)
+                        {
+                            <div class="media mb-3 p-3 border rounded">
+                                <div class="comment-header">
+                                    <img src="@comment.User.ProfilePictureUrl" class="rounded-circle" alt="@comment.User.UserName" width="50" height="50" />
+                                    <h5 class="mt-0">@comment.User.UserName</h5>
+                                </div>
+                                <div class="media-body">
+                                    <p>@comment.Content</p>
+                                    <small class="text-muted">@comment.PostedDate.ToString("g")</small>
+                                    @if (User.Identity.Name == Model.Organizer.UserName
+                                   || User.Identity.Name == comment.User.UserName
+                                   || User.IsInRole("Admin"))
+                                    {
+                                        <form method="post" asp-action="DeleteComment" asp-controller="Events">
+                                            <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                            <input type="hidden" name="eventId" value="@Model.EventId" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
-                            <div class="media-body">
-                                <p>@comment.Content</p>
-                                <small class="text-muted">@comment.PostedDate.ToString("g")</small>
-                                @if (User.Identity.Name == Model.Organizer.UserName || User.Identity.Name == comment.User.UserName)
-                                {
-                                    <form method="post" asp-action="DeleteComment" asp-controller="Events">
-                                        <input type="hidden" name="commentId" value="@comment.CommentId" />
-                                        <input type="hidden" name="eventId" value="@Model.EventId" />
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
-                                }
-                            </div>
-                        </div>
+                        }
                         <hr />
                     }
                 </div>
@@ -98,8 +107,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-

@@ -7,7 +7,6 @@ using STAREvents.Web.ViewModels.Profile;
 using System.Security.Claims;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileControllerErrorMessages;
 
-
 namespace STAREvents.Web.Controllers
 {
     [Authorize]
@@ -15,53 +14,37 @@ namespace STAREvents.Web.Controllers
     {
         private readonly IProfileService profileService;
 
-        public ProfileController(IProfileService _profileService)
+        public ProfileController(IProfileService profileService)
         {
-            this.profileService = _profileService;
+            this.profileService = profileService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
             {
-                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userIdValue == null)
-                {
-                    return Unauthorized();
-                }
+                return Unauthorized();
+            }
 
-                Guid userId = new Guid(userIdValue);
-                ProfileViewModel model = await profileService.LoadProfileAsync(userId);
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return View("Error", new ErrorViewModel { Message = ProfileLoadError });
-            }
+            Guid userId = new Guid(userIdValue);
+            ProfileViewModel model = await profileService.LoadProfileAsync(userId);
+            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            try
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
             {
-                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userIdValue == null)
-                {
-                    return Unauthorized();
-                }
+                return Unauthorized();
+            }
 
-                Guid userId = new Guid(userIdValue);
-                ProfileInputModel model = await profileService.LoadEditFormAsync(userId);
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return View("Error", new ErrorViewModel { Message = EditFormLoadError });
-            }
+            Guid userId = new Guid(userIdValue);
+            ProfileInputModel model = await profileService.LoadEditFormAsync(userId);
+            return View(model);
         }
 
         [HttpPost]
@@ -72,29 +55,17 @@ namespace STAREvents.Web.Controllers
                 return View(model);
             }
 
-            try
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
             {
-                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userIdValue == null)
-                {
-                    return Unauthorized();
-                }
+                return Unauthorized();
+            }
 
-                Guid userId = new Guid(userIdValue);
-                await profileService.UpdateProfileAsync(userId, model);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError("ProfilePicture", ex.Message);
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return View("Error", new ErrorViewModel { Message = GeneralErrorForUpdatingProfile });
-            }
+            Guid userId = new Guid(userIdValue);
+            await profileService.UpdateProfileAsync(userId, model);
+            return RedirectToAction(nameof(Index));
         }
+
         [HttpGet]
         public IActionResult ChangePassword()
         {
@@ -131,4 +102,8 @@ namespace STAREvents.Web.Controllers
         }
     }
 }
+
+
+
+
 

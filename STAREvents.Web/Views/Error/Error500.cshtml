@@ -10,8 +10,12 @@
         <img class="custom-logo" src="~/images/logo-main.svg" alt="STAREvents Logo" />
         <div class="custom-error-title">500</div>
         <div class="custom-error-message">Oops! Something went wrong on our end. Please try again later.</div>
-        <a class="custom-home-button" asp-area="" asp-controller="Home" asp-action="Index">Go to Home</a>
+        <div class="custom-error-code mb-3">Exception Code: @ViewData["ExceptionCode"]</div>
+        <a class="custom-home-button btn btn-primary" asp-area="" asp-controller="Home" asp-action="Index">Go to Home</a>
     </div>
 </div>
+
+
+
 
 

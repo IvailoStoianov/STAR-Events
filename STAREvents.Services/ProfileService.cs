@@ -8,6 +8,11 @@ using STAREvents.Web.ViewModels.Profile;
 using static STAREvents.Common.EntityValidationConstants.AllowedExtenstions;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
 using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace STAREvents.Services.Data
 {
@@ -17,11 +22,11 @@ namespace STAREvents.Services.Data
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ProfileService(UserManager<ApplicationUser> _userManager,
+        public ProfileService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IWebHostEnvironment webHostEnvironment)
         {
-            this.userManager = _userManager;
+            this.userManager = userManager;
             this.signInManager = signInManager;
             this.webHostEnvironment = webHostEnvironment;
         }
@@ -79,8 +84,6 @@ namespace STAREvents.Services.Data
                 Email = user.Email ?? string.Empty
             };
 
-
-
             return profileInputModel;
         }
 
@@ -114,30 +117,16 @@ namespace STAREvents.Services.Data
                 throw new KeyNotFoundException(UserNotFound);
             }
 
-            // Update user properties if they are not equal to null or empty
+            ValidateProfileInputModel(model);
+
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.Email = model.Email;
             user.UserName = model.Username;
 
-            // Update profile picture if provided
             if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
             {
-                // Validate file type
-                var allowedExtensions = ImageExtensions;
-                var extension = Path.GetExtension(model.ProfilePicture.FileName).ToLowerInvariant();
-
-                if (!allowedExtensions.Contains(extension))
-                {
-                    throw new InvalidOperationException(InvalidImageFormat);
-                }
-
-                // Validate MIME type
-                var allowedMimeTypes = AllowedMimeTypes;
-                if (!allowedMimeTypes.Contains(model.ProfilePicture.ContentType))
-                {
-                    throw new InvalidOperationException(InvalidImageFormat);
-                }
+                ValidateProfilePicture(model.ProfilePicture);
 
                 var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultProfilePicturePath);
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfilePicture.FileName;
@@ -180,7 +169,42 @@ namespace STAREvents.Services.Data
 
             return result;
         }
+
+        private void ValidateProfileInputModel(ProfileInputModel model)
+        {
+            if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName) ||
+                string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Email))
+            {
+                throw new ArgumentException("All fields are required.");
+            }
+
+            if (!new EmailAddressAttribute().IsValid(model.Email))
+            {
+                throw new ArgumentException("Invalid email address.");
+            }
+        }
+
+        private void ValidateProfilePicture(IFormFile profilePicture)
+        {
+            var allowedExtensions = ImageExtensions;
+            var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                throw new InvalidOperationException(InvalidImageFormat);
+            }
+
+            var allowedMimeTypes = AllowedMimeTypes;
+            if (!allowedMimeTypes.Contains(profilePicture.ContentType))
+            {
+                throw new InvalidOperationException(InvalidImageFormat);
+            }
+        }
     }
 }
+
+
+
+
 
 

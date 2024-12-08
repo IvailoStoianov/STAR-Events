@@ -8,7 +8,7 @@ namespace STAREvents.Services.Data.Interfaces
 {
     public interface IEventHelperService 
     {
-        Task JoinEventAsync(Guid eventId, string userName);
-        Task LeaveEventAsync(Guid eventId, string userName);
+        Task JoinEventAsync(Guid eventId, Guid userId);
+        Task LeaveEventAsync(Guid eventId, Guid userId);
     }
 }

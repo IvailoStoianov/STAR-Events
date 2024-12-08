@@ -18,15 +18,15 @@ namespace STAREvents.Services.Data
         private readonly IRepository<Category, object> categoryRepository;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public MyEventsService(IRepository<Event, object> _eventRepository,
-                               IRepository<Category, object> _categoryRepository,
-                               IRepository<UserEventAttendance, object> _attendanceRepository,
-                               UserManager<ApplicationUser> _userManager)
-            : base(_eventRepository, _attendanceRepository, _userManager)
+        public MyEventsService(IRepository<Event, object> eventRepository,
+                               IRepository<Category, object> categoryRepository,
+                               IRepository<UserEventAttendance, object> attendanceRepository,
+                               UserManager<ApplicationUser> userManager)
+            : base(eventRepository, attendanceRepository, userManager)
         {
-            this.eventRepository = _eventRepository;
-            this.categoryRepository = _categoryRepository;
-            this.userManager = _userManager;
+            this.eventRepository = eventRepository;
+            this.categoryRepository = categoryRepository;
+            this.userManager = userManager;
         }
 
         public async Task<EventsViewModel> LoadMyEventsAsync(string searchTerm, Guid? selectedCategory, string sortOption, string userId, int page = 1, int pageSize = 12)
@@ -34,8 +34,9 @@ namespace STAREvents.Services.Data
             var user = await userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new KeyNotFoundException("User not found");
             }
+
             var events = await eventRepository.GetAllAttached()
                                               .Include(e => e.Organizer)
                                               .Include(e => e.Category)
@@ -43,6 +44,7 @@ namespace STAREvents.Services.Data
                                               .Where(e => e.isDeleted == false)
                                               .Where(e => e.Organizer.Id == user.Id || e.UserEventAttendances.Any(uea => uea.UserId == user.Id))
                                               .ToListAsync();
+
             var categories = await categoryRepository.GetAllAsync();
 
             var filteredEvents = events
@@ -97,4 +99,7 @@ namespace STAREvents.Services.Data
         }
     }
 }
+
+
+
 

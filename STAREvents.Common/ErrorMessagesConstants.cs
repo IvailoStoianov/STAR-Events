@@ -58,6 +58,11 @@ namespace STAREvents.Common
             public const string CapacityRequired = "Capacity is required.";
             public const string CapacityRange = "Capacity must be at least 1.";
         }
+        public static class EventsServiceErrorMessages
+        {
+            public const string EventNotFound = "Event not found.";
+            public const string UserNotFound = "User not found.";
+        }
         public static class ImageRelatedErrorMessages
         {
             public const string InvalidImageFormat = "Invalid image format. Only JPG, JPEG, PNG, and SVG are allowed.";

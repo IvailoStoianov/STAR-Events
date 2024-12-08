@@ -1,41 +1,38 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
-using STAREvents.Services;
 using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
+using static STAREvents.Common.FilePathConstants.EventPicturePaths;
+using static STAREvents.Common.EntityValidationConstants.RoleNames;
 
 public class EventsService : EventHelperService, IEventsService
 {
-    private IRepository<Event, object> eventRepository;
-    private IRepository<Category, object> categoryRepository;
-    private IRepository<Comment, object> commentRepository;
-    private IRepository<UserEventAttendance, object> attendanceRepository;
+    private readonly IRepository<Event, object> eventRepository;
+    private readonly IRepository<Category, object> categoryRepository;
+    private readonly IRepository<Comment, object> commentRepository;
+    private readonly IRepository<UserEventAttendance, object> attendanceRepository;
     private readonly UserManager<ApplicationUser> userManager;
-    private IWebHostEnvironment webHostEnvironment;
+    private readonly IWebHostEnvironment webHostEnvironment;
 
-    public EventsService(IRepository<Event, object> _eventRepository,
-        IRepository<Category, object> _categoryRepository,
-        IRepository<Comment, object> _commentRepository,
-        IRepository<UserEventAttendance, object> _attendanceRepository,
-        UserManager<ApplicationUser> _userManager,
-        IWebHostEnvironment _webHostEnvironment)
-        : base(_eventRepository, _attendanceRepository, _userManager)
+    public EventsService(IRepository<Event, object> eventRepository,
+        IRepository<Category, object> categoryRepository,
+        IRepository<Comment, object> commentRepository,
+        IRepository<UserEventAttendance, object> attendanceRepository,
+        UserManager<ApplicationUser> userManager,
+        IWebHostEnvironment webHostEnvironment)
+        : base(eventRepository, attendanceRepository, userManager)
     {
-        this.eventRepository = _eventRepository;
-        this.categoryRepository = _categoryRepository;
-        this.commentRepository = _commentRepository;
-        this.attendanceRepository = _attendanceRepository;
-        this.userManager = _userManager;
-        this.webHostEnvironment = _webHostEnvironment;
+        this.eventRepository = eventRepository;
+        this.categoryRepository = categoryRepository;
+        this.commentRepository = commentRepository;
+        this.attendanceRepository = attendanceRepository;
+        this.userManager = userManager;
+        this.webHostEnvironment = webHostEnvironment;
     }
 
     public async Task<EventsViewModel> LoadEventAsync(string searchTerm, Guid? selectedCategory, string sortOption, int page = 1, int pageSize = 12)
@@ -103,14 +100,17 @@ public class EventsService : EventHelperService, IEventsService
 
         if (eventEntity == null)
         {
-            return null;
+            throw new KeyNotFoundException(EventNotFound);
         }
 
         var hasJoined = false;
-        if (userName != null)
+        if (!string.IsNullOrEmpty(userName))
         {
             var user = await userManager.FindByNameAsync(userName);
-            hasJoined = await attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id) != null;
+            if (user != null)
+            {
+                hasJoined = await attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id) != null;
+            }
         }
 
         return new EventViewModel
@@ -134,16 +134,21 @@ public class EventsService : EventHelperService, IEventsService
                 CommentId = c.CommentId,
                 Content = c.Content,
                 PostedDate = c.PostedDate,
-                User = c.User
+                User = c.User,
+                isDeleted = c.isDeleted
             }).ToList(),
-            HasJoined = hasJoined 
+            HasJoined = hasJoined
         };
     }
-
 
     public async Task AddCommentAsync(Guid eventId, string userName, string content)
     {
         var user = await userManager.FindByNameAsync(userName);
+        if (user == null)
+        {
+            throw new KeyNotFoundException(UserNotFound);
+        }
+
         var newComment = new Comment
         {
             EventId = eventId,
@@ -154,14 +159,23 @@ public class EventsService : EventHelperService, IEventsService
         await commentRepository.AddAsync(newComment);
     }
 
-    public async Task DeleteCommentAsync(Guid commentId, string userName)
+    public async Task SoftDeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var user = await userManager.FindByNameAsync(userName);
-        var comment = await commentRepository.FirstOrDefaultAsync(c => c.CommentId == commentId && (c.UserId == user.Id || c.Event.OrganizerID == user.Id));
-
-        if (comment != null)
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
         {
-            await commentRepository.DeleteAsync(comment);
+            throw new KeyNotFoundException(UserNotFound);
+        }
+
+        var comment = await commentRepository.FirstOrDefaultAsync(c => c.CommentId == commentId);
+        var isAdmin = await userManager.IsInRoleAsync(user, Administrator);
+
+        if (comment != null 
+            || isAdmin
+            || comment.UserId == userId)
+        {
+            comment.isDeleted = true;
+            await commentRepository.UpdateAsync(comment);
         }
     }
 
@@ -171,7 +185,7 @@ public class EventsService : EventHelperService, IEventsService
 
         if (eventEntity == null)
         {
-            return null;
+            throw new KeyNotFoundException(EventNotFound);
         }
 
         return new EditEventInputModel
@@ -188,13 +202,15 @@ public class EventsService : EventHelperService, IEventsService
             Capacity = eventEntity.Capacity
         };
     }
+
     public async Task<Guid> EditEventAsync(EditEventInputModel model)
     {
         var eventEntity = await eventRepository.GetByIdAsync(model.EventId);
         if (eventEntity == null)
         {
-            throw new Exception("Event not found.");
+            throw new KeyNotFoundException(EventNotFound);
         }
+
         eventEntity.Name = model.Name;
         eventEntity.Description = model.Description;
         eventEntity.Address = model.Address;
@@ -203,18 +219,38 @@ public class EventsService : EventHelperService, IEventsService
         eventEntity.CategoryID = model.CategoryId;
         eventEntity.Capacity = model.Capacity;
 
-        if(model.Image != null)
+        if (model.Image != null)
         {
-            var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images/event-images");
+            var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultEventPicturePath);
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await model.Image.CopyToAsync(fileStream);
             }
-            eventEntity.ImageUrl = $"/images/event-images/{uniqueFileName}";
+            eventEntity.ImageUrl = $"/{DefaultEventPicturePath}/{uniqueFileName}";
         }
         await eventRepository.UpdateAsync(eventEntity);
         return eventEntity.EventId;
+    }
+    public async Task SoftDeleteEventAsync(Guid eventId)
+    {
+        var eventEntity = await eventRepository.GetByIdAsync(eventId);
+        if (eventEntity == null)
+        {
+            throw new KeyNotFoundException(EventNotFound);
+        }
+
+        eventEntity.isDeleted = true;
+
+        var comments = await commentRepository.GetAllAsync();
+        var eventComments = comments.Where(c => c.EventId == eventId).ToList();
+        foreach (var comment in eventComments)
+        {
+            comment.isDeleted = true;
+            await commentRepository.UpdateAsync(comment);
+        }
+
+        await eventRepository.UpdateAsync(eventEntity);
     }
 }

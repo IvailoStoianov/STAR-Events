@@ -43,7 +43,10 @@ namespace STAREvents.Web
                 .AddUserManager<UserManager<ApplicationUser>>()
                 .AddDefaultTokenProviders();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<CustomExFilter>(); // Register the custom exception filter globally
+            });
             builder.Services.AddRazorPages();
 
             builder.Services.Configure<FormOptions>(options =>
@@ -59,6 +62,14 @@ namespace STAREvents.Web
 
 
             var app = builder.Build();
+
+            app.Use(async (context, next) =>
+            {
+                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Handling request: {RequestPath}", context.Request.Path);
+                await next.Invoke();
+                logger.LogInformation("Finished handling request.");
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

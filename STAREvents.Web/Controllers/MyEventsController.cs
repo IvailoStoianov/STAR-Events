@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Web.ViewModels.Events;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace STAREvents.Web.Controllers
 {
@@ -11,34 +10,54 @@ namespace STAREvents.Web.Controllers
     public class MyEventsController : Controller
     {
         private readonly IMyEventsService myEventsService;
-        public MyEventsController(IMyEventsService _myEventsService)
+
+        public MyEventsController(IMyEventsService myEventsService)
         {
-            this.myEventsService = _myEventsService;
+            this.myEventsService = myEventsService;
         }
+
         [HttpGet]
-        public IActionResult All(string searchTerm, Guid? selectedCategory, string sortOption, int page = 1)
+        public async Task<IActionResult> All(string searchTerm, Guid? selectedCategory, string sortOption, int page = 1)
         {
-            var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if(userId == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return Unauthorized();
             }
-            int pageSize = 8;
-            EventsViewModel model = myEventsService.LoadMyEventsAsync(searchTerm, selectedCategory, sortOption, userId, page, pageSize).Result;
+
+            var model = await myEventsService.LoadMyEventsAsync(searchTerm, selectedCategory, sortOption, userId, page);
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> JoinEvent(Guid eventId)
         {
-            await myEventsService.JoinEventAsync(eventId, User?.Identity?.Name);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            await myEventsService.JoinEventAsync(eventId, Guid.Parse(userId));
             return RedirectToAction(nameof(All));
         }
 
         [HttpPost]
         public async Task<IActionResult> LeaveEvent(Guid eventId)
         {
-            await myEventsService.LeaveEventAsync(eventId, User?.Identity?.Name);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            await myEventsService.LeaveEventAsync(eventId, Guid.Parse(userId));
             return RedirectToAction(nameof(All));
         }
     }
 }
+
+
+
+
+

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Events;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 public class EventsController : Controller
 {
@@ -23,7 +24,12 @@ public class EventsController : Controller
     [HttpGet]
     public async Task<IActionResult> EventDetails(Guid id)
     {
-        var eventDetails = await _eventsService.GetEventDetailsAsync(id, User?.Identity?.Name);
+        string? userName = User?.Identity?.Name;
+        if (string.IsNullOrEmpty(userName))
+        {
+            return Unauthorized();
+        }
+        var eventDetails = await _eventsService.GetEventDetailsAsync(id, userName);
         if (eventDetails == null)
         {
             return NotFound();
@@ -31,37 +37,56 @@ public class EventsController : Controller
         return View(eventDetails);
     }
 
-
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> JoinEvent(Guid eventId)
     {
-        await _eventsService.JoinEventAsync(eventId, User?.Identity?.Name);
-        return RedirectToAction("EventDetails", new { id = eventId });
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        await _eventsService.JoinEventAsync(eventId, Guid.Parse(userId));
+        return RedirectToAction(nameof(EventDetails), new { id = eventId });
     }
 
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> LeaveEvent(Guid eventId)
     {
-        await _eventsService.LeaveEventAsync(eventId, User?.Identity?.Name);
-        return RedirectToAction("EventDetails", new { id = eventId });
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        await _eventsService.LeaveEventAsync(eventId, Guid.Parse(userId));
+        return RedirectToAction(nameof(EventDetails), new { id = eventId });
     }
 
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddComment(Guid eventId, string content)
     {
-        await _eventsService.AddCommentAsync(eventId, User?.Identity?.Name, content);
-        return RedirectToAction("EventDetails", new { id = eventId });
+        string? userName = User?.Identity?.Name;
+        if (string.IsNullOrEmpty(userName))
+        {
+            return Unauthorized();
+        }
+        await _eventsService.AddCommentAsync(eventId, userName, content);
+        return RedirectToAction(nameof(EventDetails), new { id = eventId });
     }
 
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> DeleteComment(Guid commentId, Guid eventId)
     {
-        await _eventsService.DeleteCommentAsync(commentId, User.Identity.Name);
-        return RedirectToAction("EventDetails", new { id = eventId });
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        await _eventsService.SoftDeleteCommentAsync(commentId, Guid.Parse(userId));
+        return RedirectToAction(nameof(EventDetails), new { id = eventId });
     }
 
     [Authorize]
@@ -71,11 +96,19 @@ public class EventsController : Controller
         EditEventInputModel model = await _eventsService.GetEditEventAsync(eventId);
         return View(model);
     }
+
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Edit(EditEventInputModel model)
     {
         Guid eventId = await _eventsService.EditEventAsync(model);
-        return RedirectToAction("EventDetails", new { id = eventId });
+        return RedirectToAction(nameof(EventDetails), new { id = eventId });
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> SoftDeleteEvent(Guid eventId)
+    {
+        await _eventsService.SoftDeleteEventAsync(eventId);
+        return RedirectToAction(nameof(All), new { id = eventId });
     }
 }
