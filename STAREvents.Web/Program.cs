@@ -12,6 +12,7 @@ using Azure.Storage.Blobs;
 using STAREvents.Services.Data;
 using System.Configuration;
 using Microsoft.AspNetCore.Http.Features;
+using static STAREvents.Web.Infrastructure.Extensions.IdentityConfiguration;
 
 namespace STAREvents.Web
 {
@@ -115,32 +116,6 @@ namespace STAREvents.Web
             }
 
             app.Run();
-        }
-
-        private static void ConfigureIdentity(WebApplicationBuilder builder, IdentityOptions cfg)
-        {
-            cfg.Password.RequireDigit =
-                builder.Configuration.GetValue<bool>("Identity:Password:RequireDigits");
-            cfg.Password.RequireLowercase =
-                builder.Configuration.GetValue<bool>("Identity:Password:RequireLowercase");
-            cfg.Password.RequireUppercase =
-                builder.Configuration.GetValue<bool>("Identity:Password:RequireUppercase");
-            cfg.Password.RequireNonAlphanumeric =
-                builder.Configuration.GetValue<bool>("Identity:Password:RequireNonAlphanumerical");
-            cfg.Password.RequiredLength =
-                builder.Configuration.GetValue<int>("Identity:Password:RequiredLength");
-            cfg.Password.RequiredUniqueChars =
-                builder.Configuration.GetValue<int>("Identity:Password:RequiredUniqueCharacters");
-
-            cfg.SignIn.RequireConfirmedAccount =
-                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedAccount");
-            cfg.SignIn.RequireConfirmedEmail =
-                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedEmail");
-            cfg.SignIn.RequireConfirmedPhoneNumber =
-                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedPhoneNumber");
-
-            cfg.User.RequireUniqueEmail =
-                builder.Configuration.GetValue<bool>("Identity:User:RequireUniqueEmail");
         }
     }
 }

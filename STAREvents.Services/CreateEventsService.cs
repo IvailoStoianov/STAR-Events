@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
 using static STAREvents.Common.ErrorMessagesConstants.CreateEventsServiceErrorMessages;
+using static STAREvents.Common.FilePathConstants.EventPicturePaths;
 
 namespace STAREvents.Services.Data
 {
@@ -41,7 +42,7 @@ namespace STAREvents.Services.Data
             string imageUrl = string.Empty;
             if (model.Image != null)
             {
-                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images/event-images");
+                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultEventPicturePath);
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
@@ -50,7 +51,7 @@ namespace STAREvents.Services.Data
                     await model.Image.CopyToAsync(fileStream);
                 }
 
-                imageUrl = $"/images/event-images/{uniqueFileName}";
+                imageUrl = $"/{DefaultEventPicturePath}/{uniqueFileName}";
             }
 
             try

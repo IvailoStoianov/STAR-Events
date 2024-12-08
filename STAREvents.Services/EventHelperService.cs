@@ -2,8 +2,7 @@
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
-using System;
-using System.Threading.Tasks;
+using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
 
 namespace STAREvents.Services.Data
 {
@@ -27,16 +26,17 @@ namespace STAREvents.Services.Data
             var user = await userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found");
+                throw new KeyNotFoundException(UserNotFound);
             }
 
             var eventEntity = await eventRepository.GetByIdAsync(eventId);
             if (eventEntity == null)
             {
-                throw new KeyNotFoundException("Event not found");
+                throw new KeyNotFoundException(EventNotFound);
             }
 
-            var attendance = await attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id);
+            var attendance = await attendanceRepository
+                .FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id);
             if (attendance == null)
             {
                 var newAttendance = new UserEventAttendance
@@ -56,13 +56,13 @@ namespace STAREvents.Services.Data
             var user = await userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found");
+                throw new KeyNotFoundException(UserNotFound);
             }
 
             var eventEntity = await eventRepository.GetByIdAsync(eventId);
             if (eventEntity == null)
             {
-                throw new KeyNotFoundException("Event not found");
+                throw new KeyNotFoundException(EventNotFound);
             }
 
             var attendance = await attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id);

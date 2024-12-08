@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using STAREvents.Services.Data;
+
 using STAREvents.Services.Data.Interfaces.STAREvents.Web.Services;
-using STAREvents.Web.ViewModels.Admin;
-using STAREvents.Web.ViewModels.Events;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
 
 namespace STAREvents.Web.Areas.Admin.Controllers

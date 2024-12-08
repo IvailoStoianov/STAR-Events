@@ -2,14 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
+using STAREvents.Services.Data.Interfaces;
 using STAREvents.Services.Data.Interfaces.STAREvents.Web.Services;
 using STAREvents.Web.ViewModels.Admin;
 using STAREvents.Web.ViewModels.Events;
 using STAREvents.Web.ViewModels.Profile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using static STAREvents.Common.EntityValidationConstants.RoleNames;
+using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
 
 namespace STAREvents.Services.Data
 {
@@ -64,7 +63,7 @@ namespace STAREvents.Services.Data
                     Username = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
                     IsDeleted = user.isDeleted,
-                    IsAdmin = await userManager.IsInRoleAsync(user, "Admin")
+                    IsAdmin = await userManager.IsInRoleAsync(user, Administrator)
                 });
             }
 
@@ -140,20 +139,28 @@ namespace STAREvents.Services.Data
             return new List<CommentViewModel>();
         }
 
-        public async Task DeleteCommentAsync(Guid commentId)
+        public async Task SoftDeleteCommentAsync(Guid commentId, string userName)
         {
+            var user = await userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new KeyNotFoundException(UserNotFound);
+            }
+
             var eventWithComment = await eventRepository.GetAllAttached().Include(e => e.EventComments).FirstOrDefaultAsync(e => e.EventComments.Any(c => c.CommentId == commentId));
+            var isAdmin = await userManager.IsInRoleAsync(user, Administrator);
 
             if (eventWithComment != null)
             {
                 var comment = eventWithComment.EventComments.FirstOrDefault(c => c.CommentId == commentId);
-                if (comment != null)
+                if (comment != null && (comment.UserId == user.Id || eventWithComment.OrganizerID == user.Id || isAdmin))
                 {
                     comment.isDeleted = true;
                     await eventRepository.UpdateAsync(eventWithComment);
                 }
             }
         }
+
         public async Task RecoverUserAsync(Guid userId)
         {
             var user = await userManager.FindByIdAsync(userId.ToString());
@@ -163,12 +170,13 @@ namespace STAREvents.Services.Data
                 await userManager.UpdateAsync(user);
             }
         }
+
         public async Task RemoveAdminRole(Guid userId)
         {
             var user = await userManager.FindByIdAsync(userId.ToString());
             if (user != null)
             {
-                await userManager.RemoveFromRoleAsync(user, "Admin");
+                await userManager.RemoveFromRoleAsync(user, Administrator);
             }
         }
 
@@ -177,8 +185,10 @@ namespace STAREvents.Services.Data
             var user = await userManager.FindByIdAsync(userId.ToString());
             if (user != null)
             {
-                await userManager.AddToRoleAsync(user, "Admin");
+                await userManager.AddToRoleAsync(user, Administrator);
             }
         }
     }
 }
+
+
