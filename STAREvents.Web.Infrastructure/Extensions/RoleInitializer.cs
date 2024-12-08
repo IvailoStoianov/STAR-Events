@@ -17,6 +17,12 @@ namespace STAREvents.Web.Infrastructure.Extensions
             {
                 await roleManager.CreateAsync(new IdentityRole<Guid> { Name = "Admin" });
             }
+
+            if (await roleManager.FindByNameAsync("User") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole<Guid> { Name = "User" });
+            }
+
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {
                 ApplicationUser admin = new ApplicationUser

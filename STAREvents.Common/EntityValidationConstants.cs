@@ -82,6 +82,11 @@ namespace STAREvents.Common
         {
             public static readonly string[] ImageExtensions = { ".jpg", ".jpeg", ".png", ".svg" };
             public static readonly string[] AllowedMimeTypes = new[] { "image/jpeg", "image/png", "image/svg" };
-    }
+        }
+        public static class RoleNames
+        {
+            public const string Administrator = "Admin";
+            public const string User = "User";
+        }
     }
 }

@@ -7,11 +7,12 @@ using STAREvents.Web.ViewModels.Events;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static STAREvents.Common.EntityValidationConstants.RoleNames;
 
 namespace STAREvents.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Area(Administrator)]
+    [Authorize(Roles = Administrator)]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
