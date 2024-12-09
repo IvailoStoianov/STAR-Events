@@ -3,12 +3,14 @@ using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.CreateEvents;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using static STAREvents.Common.EntityValidationConstants.EventConstants;
 using static STAREvents.Common.ErrorMessagesConstants.CreateEventsServiceErrorMessages;
 using static STAREvents.Common.FilePathConstants.EventPicturePaths;
+using Microsoft.AspNetCore.Http;
 
 namespace STAREvents.Services.Data
 {
@@ -18,13 +20,14 @@ namespace STAREvents.Services.Data
         private readonly IRepository<Category, object> categoryRepository;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public CreateEventsService(IRepository<Event, object> _eventRepository, 
-            IWebHostEnvironment _webHostEnvironment,
-            IRepository<Category, object> _categoryRepository)
+        public CreateEventsService(
+            IRepository<Event, object> eventRepository,
+            IWebHostEnvironment webHostEnvironment,
+            IRepository<Category, object> categoryRepository)
         {
-            this.eventRepository = _eventRepository;
-            this.categoryRepository = _categoryRepository;
-            this.webHostEnvironment = _webHostEnvironment;
+            this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            this.categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            this.webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         }
 
         public async Task<IEnumerable<Category>> LoadCategoriesAsync()
@@ -34,6 +37,11 @@ namespace STAREvents.Services.Data
 
         public async Task CreateEventAsync(CreateEventInputModel model, Guid userId)
         {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             if (model.Image != null && model.Image.Length > MaxImageSize)
             {
                 throw new InvalidOperationException(string.Format(ImageSizeExceeded, MaxImageSize));
@@ -42,35 +50,26 @@ namespace STAREvents.Services.Data
             string imageUrl = string.Empty;
             if (model.Image != null)
             {
-                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultEventPicturePath);
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(fileStream);
-                }
-
-                imageUrl = $"/{DefaultEventPicturePath}/{uniqueFileName}";
+                imageUrl = await SaveImageAsync(model.Image);
             }
+
+            var newEvent = new Event
+            {
+                EventId = Guid.NewGuid(),
+                Name = model.Name,
+                Description = model.Description,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Capacity = model.Capacity,
+                ImageUrl = imageUrl,
+                OrganizerID = userId,
+                CategoryID = model.CategoryId,
+                Address = model.Address,
+                CreatedOnDate = DateTime.UtcNow
+            };
 
             try
             {
-                var newEvent = new Event
-                {
-                    EventId = Guid.NewGuid(),
-                    Name = model.Name,
-                    Description = model.Description,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    Capacity = model.Capacity,
-                    ImageUrl = imageUrl,
-                    OrganizerID = userId,
-                    CategoryID = model.CategoryId,
-                    Address = model.Address,
-                    CreatedOnDate = DateTime.UtcNow
-                };
-
                 await eventRepository.AddAsync(newEvent);
             }
             catch (Exception ex)
@@ -79,8 +78,20 @@ namespace STAREvents.Services.Data
             }
         }
 
-        
+        private async Task<string> SaveImageAsync(IFormFile image)
+        {
+            var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultEventPicturePath);
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            Directory.CreateDirectory(uploadsFolder);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+            }
+
+            return $"/{DefaultEventPicturePath}/{uniqueFileName}";
+        }
     }
 }
-
-

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using static STAREvents.Common.ValidationResultConstants;
 
 namespace STAREvents.Web.Common.Custom_Attributes
@@ -24,10 +25,15 @@ namespace STAREvents.Web.Common.Custom_Attributes
 
             if (startDateProperty == null)
             {
-                return new ValidationResult(string.Format(UknownProperty,_startDatePropertyName));
+                return new ValidationResult(string.Format(UknownProperty, _startDatePropertyName));
             }
 
             var startDate = (DateTime?)startDateProperty.GetValue(validationContext.ObjectInstance);
+
+            if (endDate < DateTime.UtcNow)
+            {
+                return new ValidationResult(DateBeforeToday);
+            }
 
             if (startDate == null || startDate > endDate)
             {

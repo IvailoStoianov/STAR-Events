@@ -29,32 +29,19 @@ namespace STAREvents.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                model.Categories = await createEventsService.LoadCategoriesAsync();
                 return View(model);
             }
 
-            try
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
             {
-                var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userIdValue == null)
-                {
-                    return Unauthorized();
-                }
+                return Unauthorized();
+            }
 
-                var userId = new Guid(userIdValue);
-                await createEventsService.CreateEventAsync(model, userId);
-                return RedirectToAction("Index", "Home");
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An unexpected error occurred. Please try again later.");
-
-                return View(model);
-            }
+            var userId = new Guid(userIdValue);
+            await createEventsService.CreateEventAsync(model, userId);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -103,8 +103,13 @@ namespace STAREvents.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteProfile()
         {
-            Guid userId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
+            {
+                return Unauthorized();
+            }
 
+            Guid userId = new Guid(userIdValue);
             var user = await profileService.GetUserByIdAsync(userId);
             if (user == null)
             {
@@ -112,7 +117,6 @@ namespace STAREvents.Web.Controllers
             }
             await profileService.SoftDeleteProfileAsync(userId);
             return RedirectToAction("Index", "Home");
-
         }
     }
 }

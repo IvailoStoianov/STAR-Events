@@ -20,12 +20,14 @@ namespace STAREvents.Web.ViewModels.CreateEvents
         }
 
         [Required(ErrorMessage = EventNameRequired)]
-        [MaxLength(100, ErrorMessage = EventNameMaxLength)]
+        [MaxLength(MaxNameLength, ErrorMessage = EventNameMaxLength)]
+        [MinLength(MinNameLength, ErrorMessage = EventNameMinLength)]
         [Display(Name = "Event Name")]
         public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = DescriptionRequired)]
-        [MaxLength(1000, ErrorMessage = DescriptionMaxLength)]
+        [MaxLength(MaxDescriptionLength, ErrorMessage = DescriptionMaxLength)]
+        [MinLength(MinDescriptionLength, ErrorMessage = DescriptionMinLength)]
         [Display(Name = "Description")]
         public string Description { get; set; } = null!;
 
@@ -43,6 +45,7 @@ namespace STAREvents.Web.ViewModels.CreateEvents
         [Required(ErrorMessage = StartDateRequired)]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:" + EventDateTimeFormat + "}", ApplyFormatInEditMode = true)]
+        [DateRange("CreatedOnDate", ErrorMessage = StartDateBeforeCreatedOnDate)]
         [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
 

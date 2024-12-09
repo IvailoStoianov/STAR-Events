@@ -52,11 +52,14 @@ namespace STAREvents.Common
         {
             public const string EventNameRequired = "Event name is required.";
             public const string EventNameMaxLength = "Event name cannot exceed 100 characters.";
+            public const string EventNameMinLength = "Event name must be at least 3 characters long.";
             public const string DescriptionRequired = "Description is required.";
             public const string DescriptionMaxLength = "Description cannot exceed 1000 characters.";
+            public const string DescriptionMinLength = "Description must be at least 30 characters long.";
             public const string StartDateRequired = "Start date is required.";
             public const string EndDateRequired = "End date is required.";
             public const string EndDateBeforeStartDate = "End date must be after start date.";
+            public const string StartDateBeforeCreatedOnDate = "Start date must be after created on date.";
             public const string CapacityRequired = "Capacity is required.";
             public const string CapacityRange = "Capacity must be at least 1.";
         }
