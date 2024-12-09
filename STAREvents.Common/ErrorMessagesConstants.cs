@@ -31,6 +31,8 @@ namespace STAREvents.Common
             public const string InvalidImageFormat = "Invalid image format. Only JPEG, PNG, and GIF are allowed.";
             public const string ProfilePictureSizeExceeded = "File size exceeds {0} KB.";
             public const string PasswordsAreRequired = "Current password and new password must be provided.";
+            public const string AllFieldsAreRequired = "All fields are required.";
+            public const string InvalidEmail = "Invalid email address.";
         }
         public static class ProfileControllerErrorMessages
         {
@@ -67,6 +69,13 @@ namespace STAREvents.Common
         {
             public const string InvalidImageFormat = "Invalid image format. Only JPG, JPEG, PNG, and SVG are allowed.";
             public const string ImageSizeExceeded = "File size exceeds {0} MB.";
+        }
+        public static class LoginErrorMessages
+        {
+            public const string ProfileDeleted = "This profile has been deleted.";
+            public const string InvalidLoginAttempt = "Invalid login attempt.";
+            public const string UserIsLoggedIn = "User logged in.";
+            public const string InvalidLogInAttempt = "Invalid login attempt.";
         }
     }
 }

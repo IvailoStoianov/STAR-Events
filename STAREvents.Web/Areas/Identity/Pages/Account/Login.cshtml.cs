@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using STAREvents.Data.Models;
 using STAREvents.Web.ViewModels.Login;
+using static STAREvents.Common.ErrorMessagesConstants.LoginErrorMessages;
+using static STAREvents.Common.EntityValidationConstants.RoleNames;
+using static STAREvents.Common.UrlRedirectConstants.LogInConstants;
 
 namespace STAREvents.Web.Areas.Identity.Pages.Account
 {
@@ -75,31 +78,32 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user != null)
                 {
+                    if (user.isDeleted)
+                    {
+                        ModelState.AddModelError(string.Empty, ProfileDeleted);
+                        return Page();
+                    }
+
                     var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
                     if (result.Succeeded)
                     {
-                        if (await _userManager.IsInRoleAsync(user, "Admin"))
+                        if (await _userManager.IsInRoleAsync(user, Administrator))
                         {
-                            return LocalRedirect(Url.Page("/Admin/Dashboard", new { area = "Admin" }));
+                            return LocalRedirect(Url.Page(AdminDashboard, new { area = Administrator }));
                         }
-                        _logger.LogInformation("User logged in.");
+                        _logger.LogInformation(UserIsLoggedIn);
                         return LocalRedirect(returnUrl);
-                    }
-                    if (result.IsLockedOut)
-                    {
-                        _logger.LogWarning("User account locked out.");
-                        return RedirectToPage("./Lockout");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        ModelState.AddModelError(string.Empty, InvalidLogInAttempt);
                         return Page();
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, InvalidLogInAttempt);
                     return Page();
                 }
             }
@@ -109,3 +113,4 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
         }
     }
 }
+

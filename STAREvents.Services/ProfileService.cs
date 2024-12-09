@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using STAREvents.Data.Repository.Interfaces;
 
 namespace STAREvents.Services.Data
 {
@@ -21,14 +22,20 @@ namespace STAREvents.Services.Data
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IRepository<Event, object> eventRepository;
+        private readonly IRepository<Comment, object> commentRepository;
 
         public ProfileService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            IRepository<Event, object> eventRepository,
+            IRepository<Comment, object> commentRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.webHostEnvironment = webHostEnvironment;
+            this.eventRepository = eventRepository;
+            this.commentRepository = commentRepository;
         }
 
         public async Task<ApplicationUser> GetUserByIdAsync(Guid userId)
@@ -170,17 +177,47 @@ namespace STAREvents.Services.Data
             return result;
         }
 
+        public async Task SoftDeleteProfileAsync(Guid userId)
+        {
+            var user = await GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException(UserNotFound);
+            }
+
+            user.isDeleted = true;
+
+            var userEvents = await eventRepository.GetAllAsync();
+            var events = userEvents.Where(e => e.OrganizerID == userId).ToList();
+            foreach (var eventEntity in events)
+            {
+                eventEntity.isDeleted = true;
+                await eventRepository.UpdateAsync(eventEntity);
+            }
+
+            var userComments = await commentRepository.GetAllAsync();
+            var comments = userComments.Where(c => c.UserId == userId).ToList();
+            foreach (var comment in comments)
+            {
+                comment.isDeleted = true;
+                await commentRepository.UpdateAsync(comment);
+            }
+
+            await userManager.UpdateAsync(user);
+            await signInManager.SignOutAsync();
+        }
+
         private void ValidateProfileInputModel(ProfileInputModel model)
         {
             if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName) ||
                 string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Email))
             {
-                throw new ArgumentException("All fields are required.");
+                throw new ArgumentException(AllFieldsAreRequired);
             }
 
             if (!new EmailAddressAttribute().IsValid(model.Email))
             {
-                throw new ArgumentException("Invalid email address.");
+                throw new ArgumentException(InvalidEmail);
             }
         }
 
@@ -202,9 +239,5 @@ namespace STAREvents.Services.Data
         }
     }
 }
-
-
-
-
 
 

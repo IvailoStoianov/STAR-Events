@@ -88,5 +88,9 @@ namespace STAREvents.Common
             public const string Administrator = "Admin";
             public const string User = "User";
         }
+        public static class ConfigurationConstants
+        { 
+            public const int MultipartBodyLengthLimitConstant = 104857600; // 100 MB
+        }
     }
 }

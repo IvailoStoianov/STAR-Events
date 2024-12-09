@@ -6,19 +6,10 @@ namespace STAREvents.Services
     {
         public bool IsGuidValid(string? id, ref Guid parsedGuid)
         {
-            // Non-existing parameter in the URL
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out parsedGuid))
             {
                 return false;
             }
-
-            // Invalid parameter in the URL
-            bool isGuidValid = Guid.TryParse(id, out parsedGuid);
-            if (!isGuidValid)
-            {
-                return false;
-            }
-
             return true;
         }
     }

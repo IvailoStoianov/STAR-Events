@@ -100,6 +100,20 @@ namespace STAREvents.Web.Controllers
 
             return View(model);
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteProfile()
+        {
+            Guid userId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var user = await profileService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            await profileService.SoftDeleteProfileAsync(userId);
+            return RedirectToAction("Index", "Home");
+
+        }
     }
 }
 

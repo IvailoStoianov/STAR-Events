@@ -1,17 +1,13 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
-using STAREvents.Services;
+using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Services.Mapping;
 using STAREvents.Web.Data;
 using STAREvents.Web.Infrastructure.Extensions;
 using STAREvents.Web.Models;
-using STAREvents.Data;
-using Azure.Storage.Blobs;
-using STAREvents.Services.Data;
-using System.Configuration;
-using Microsoft.AspNetCore.Http.Features;
+using static STAREvents.Common.EntityValidationConstants.ConfigurationConstants;
 using static STAREvents.Web.Infrastructure.Extensions.IdentityConfiguration;
 
 namespace STAREvents.Web
@@ -26,7 +22,6 @@ namespace STAREvents.Web
             builder.Logging.ClearProviders(); 
             builder.Logging.AddConsole();
 
-            // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<STAREventsDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -46,13 +41,13 @@ namespace STAREvents.Web
 
             builder.Services.AddControllersWithViews(options =>
             {
-                options.Filters.Add<CustomExFilter>(); // Register the custom exception filter globally
+                options.Filters.Add<CustomExFilter>(); 
             });
             builder.Services.AddRazorPages();
 
             builder.Services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 104857600; // 100 MB
+                options.MultipartBodyLengthLimit = MultipartBodyLengthLimitConstant; 
             });
 
 
@@ -81,7 +76,6 @@ namespace STAREvents.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
