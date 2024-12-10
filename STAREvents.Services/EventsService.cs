@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
-using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Events;
 using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
 using static STAREvents.Common.FilePathConstants.EventPicturePaths;
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
+using STAREvents.Services.Data;
 
 public class EventsService : EventHelperService, IEventsService
 {
@@ -16,22 +15,23 @@ public class EventsService : EventHelperService, IEventsService
     private readonly IRepository<Category, object> categoryRepository;
     private readonly IRepository<Comment, object> commentRepository;
     private readonly IRepository<UserEventAttendance, object> attendanceRepository;
-    private readonly UserManager<ApplicationUser> userManager;
+    private readonly IUserAuthService userAuthService;
     private readonly IWebHostEnvironment webHostEnvironment;
 
-    public EventsService(IRepository<Event, object> eventRepository,
+    public EventsService(
+        IRepository<Event, object> eventRepository,
         IRepository<Category, object> categoryRepository,
         IRepository<Comment, object> commentRepository,
         IRepository<UserEventAttendance, object> attendanceRepository,
-        UserManager<ApplicationUser> userManager,
+        IUserAuthService userAuthService,
         IWebHostEnvironment webHostEnvironment)
-        : base(eventRepository, attendanceRepository, userManager)
+        : base(eventRepository, attendanceRepository, userAuthService)
     {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.commentRepository = commentRepository;
         this.attendanceRepository = attendanceRepository;
-        this.userManager = userManager;
+        this.userAuthService = userAuthService;
         this.webHostEnvironment = webHostEnvironment;
     }
 
@@ -106,7 +106,7 @@ public class EventsService : EventHelperService, IEventsService
         var hasJoined = false;
         if (!string.IsNullOrEmpty(userName))
         {
-            var user = await userManager.FindByNameAsync(userName);
+            var user = await userAuthService.GetUserByNameAsync(userName);
             if (user != null)
             {
                 hasJoined = await attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id) != null;
@@ -143,7 +143,7 @@ public class EventsService : EventHelperService, IEventsService
 
     public async Task AddCommentAsync(Guid eventId, string userName, string content)
     {
-        var user = await userManager.FindByNameAsync(userName);
+        var user = await userAuthService.GetUserByNameAsync(userName);
         if (user == null)
         {
             throw new KeyNotFoundException(UserNotFound);
@@ -161,18 +161,16 @@ public class EventsService : EventHelperService, IEventsService
 
     public async Task SoftDeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var user = await userManager.FindByIdAsync(userId.ToString());
+        var user = await userAuthService.GetUserByIdAsync(userId.ToString());
         if (user == null)
         {
             throw new KeyNotFoundException(UserNotFound);
         }
 
         var comment = await commentRepository.FirstOrDefaultAsync(c => c.CommentId == commentId);
-        var isAdmin = await userManager.IsInRoleAsync(user, Administrator);
+        var isAdmin = await userAuthService.IsUserInRoleAsync(userId.ToString(), Administrator);
 
-        if (comment != null 
-            || isAdmin
-            || comment.UserId == userId)
+        if (comment != null && (isAdmin || comment.UserId == userId))
         {
             comment.isDeleted = true;
             await commentRepository.UpdateAsync(comment);
@@ -233,6 +231,7 @@ public class EventsService : EventHelperService, IEventsService
         await eventRepository.UpdateAsync(eventEntity);
         return eventEntity.EventId;
     }
+
     public async Task SoftDeleteEventAsync(Guid eventId)
     {
         var eventEntity = await eventRepository.GetByIdAsync(eventId);

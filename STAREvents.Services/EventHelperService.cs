@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using STAREvents.Data.Models;
+﻿using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
 using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
@@ -10,20 +9,21 @@ namespace STAREvents.Services.Data
     {
         private readonly IRepository<Event, object> eventRepository;
         private readonly IRepository<UserEventAttendance, object> attendanceRepository;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserAuthService userAuthService;
 
-        public EventHelperService(IRepository<Event, object> eventRepository,
+        public EventHelperService(
+            IRepository<Event, object> eventRepository,
             IRepository<UserEventAttendance, object> attendanceRepository,
-            UserManager<ApplicationUser> userManager)
+            IUserAuthService userAuthService)
         {
-            this.userManager = userManager;
             this.eventRepository = eventRepository;
             this.attendanceRepository = attendanceRepository;
+            this.userAuthService = userAuthService;
         }
 
         public async Task JoinEventAsync(Guid eventId, Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
             if (user == null)
             {
                 throw new KeyNotFoundException(UserNotFound);
@@ -53,7 +53,7 @@ namespace STAREvents.Services.Data
 
         public async Task LeaveEventAsync(Guid eventId, Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
             if (user == null)
             {
                 throw new KeyNotFoundException(UserNotFound);
@@ -75,8 +75,3 @@ namespace STAREvents.Services.Data
         }
     }
 }
-
-
-
-
-

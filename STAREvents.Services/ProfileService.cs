@@ -3,46 +3,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
+using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Profile;
+using System.ComponentModel.DataAnnotations;
 using static STAREvents.Common.EntityValidationConstants.AllowedExtenstions;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
 using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using STAREvents.Data.Repository.Interfaces;
 
 namespace STAREvents.Services.Data
 {
     public class ProfileService : BaseService, IProfileService
     {
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IRepository<Event, object> eventRepository;
         private readonly IRepository<Comment, object> commentRepository;
+        private readonly IUserAuthService userAuthService;
 
-        public ProfileService(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+        public ProfileService(
             IWebHostEnvironment webHostEnvironment,
             IRepository<Event, object> eventRepository,
-            IRepository<Comment, object> commentRepository)
+            IRepository<Comment, object> commentRepository,
+            IUserAuthService userAuthService)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
             this.webHostEnvironment = webHostEnvironment;
             this.eventRepository = eventRepository;
             this.commentRepository = commentRepository;
+            this.userAuthService = userAuthService;
         }
 
         public async Task<ApplicationUser> GetUserByIdAsync(Guid userId)
         {
-            var user = await userManager.Users
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
             if (user == null)
             {
                 throw new KeyNotFoundException(UserNotFound);
@@ -53,22 +45,7 @@ namespace STAREvents.Services.Data
 
         public async Task<ProfileInputModel> LoadEditFormAsync(Guid userId)
         {
-            var user = await userManager.Users
-                .Where(u => u.Id == userId)
-                .Select(u => new
-                {
-                    u.FirstName,
-                    u.LastName,
-                    u.ProfilePictureUrl,
-                    u.UserName,
-                    u.Email
-                })
-                .FirstOrDefaultAsync();
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException(UserNotFound);
-            }
+            var user = await GetUserByIdAsync(userId);
 
             IFormFile profilePicture = null;
             if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
@@ -81,7 +58,7 @@ namespace STAREvents.Services.Data
                 }
             }
 
-            var profileInputModel = new ProfileInputModel
+            return new ProfileInputModel
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -90,39 +67,25 @@ namespace STAREvents.Services.Data
                 Username = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty
             };
-
-            return profileInputModel;
         }
 
         public async Task<ProfileViewModel> LoadProfileAsync(Guid userId)
         {
-            var userProfile = await userManager.Users
-                .Where(u => u.Id == userId)
-                .Select(u => new ProfileViewModel
-                {
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    ProfilePictureUrl = u.ProfilePictureUrl,
-                    Username = u.UserName ?? string.Empty,
-                    Email = u.Email ?? string.Empty
-                })
-                .FirstOrDefaultAsync();
+            var user = await GetUserByIdAsync(userId);
 
-            if (userProfile == null)
+            return new ProfileViewModel
             {
-                throw new KeyNotFoundException(UserNotFound);
-            }
-
-            return userProfile;
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                Username = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty
+            };
         }
 
         public async Task UpdateProfileAsync(Guid userId, ProfileInputModel model)
         {
             var user = await GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                throw new KeyNotFoundException(UserNotFound);
-            }
 
             ValidateProfileInputModel(model);
 
@@ -147,7 +110,7 @@ namespace STAREvents.Services.Data
                 user.ProfilePictureUrl = $"/{DefaultProfilePicturePath}/{uniqueFileName}";
             }
 
-            var result = await userManager.UpdateAsync(user);
+            var result = await userAuthService.UpdateUserAsync(user);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException(FailedToUpdateUserProfile);
@@ -156,22 +119,10 @@ namespace STAREvents.Services.Data
 
         public async Task<IdentityResult> ChangePasswordAsync(Guid userId, ChangePasswordViewModel model)
         {
-            var user = await GetUserByIdAsync(userId);
-            if (user == null)
+            var result = await userAuthService.ChangePasswordAsync(userId.ToString(), model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
             {
-                throw new KeyNotFoundException(UserNotFound);
-            }
-
-            if (string.IsNullOrEmpty(model.CurrentPassword) || string.IsNullOrEmpty(model.NewPassword))
-            {
-                throw new ArgumentException(PasswordsAreRequired);
-            }
-
-            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-
-            if (result.Succeeded)
-            {
-                await signInManager.RefreshSignInAsync(user);
+                throw new InvalidOperationException("Failed to change password.");
             }
 
             return result;
@@ -180,11 +131,6 @@ namespace STAREvents.Services.Data
         public async Task SoftDeleteProfileAsync(Guid userId)
         {
             var user = await GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                throw new KeyNotFoundException(UserNotFound);
-            }
-
             user.isDeleted = true;
 
             var userEvents = await eventRepository.GetAllAsync();
@@ -203,8 +149,13 @@ namespace STAREvents.Services.Data
                 await commentRepository.UpdateAsync(comment);
             }
 
-            await userManager.UpdateAsync(user);
-            await signInManager.SignOutAsync();
+            var result = await userAuthService.UpdateUserAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Failed to soft delete user.");
+            }
+
+            await userAuthService.LogoutAsync();
         }
 
         private void ValidateProfileInputModel(ProfileInputModel model)
@@ -239,5 +190,3 @@ namespace STAREvents.Services.Data
         }
     }
 }
-
-

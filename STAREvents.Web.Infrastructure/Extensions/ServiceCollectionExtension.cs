@@ -21,7 +21,7 @@ namespace STAREvents.Web.Infrastructure.Extensions
         public static void RegisterRepositories(this IServiceCollection services, Assembly modelsAssembly)
         {
             // TODO: Re-write the implementation in such way that the user must create a single class for every repository
-            Type[] typesToExclude = new Type[] { typeof(ApplicationUser) };
+            Type[] typesToExclude = new Type[] {  };
             Type[] modelTypes = modelsAssembly
                 .GetTypes()
                 .Where(t => !t.IsAbstract && !t.IsInterface &&

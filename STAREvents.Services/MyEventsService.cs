@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
@@ -16,34 +14,41 @@ namespace STAREvents.Services.Data
     {
         private readonly IRepository<Event, object> eventRepository;
         private readonly IRepository<Category, object> categoryRepository;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserAuthService userAuthService;
 
-        public MyEventsService(IRepository<Event, object> eventRepository,
-                               IRepository<Category, object> categoryRepository,
-                               IRepository<UserEventAttendance, object> attendanceRepository,
-                               UserManager<ApplicationUser> userManager)
-            : base(eventRepository, attendanceRepository, userManager)
+        public MyEventsService(
+            IRepository<Event, object> eventRepository,
+            IRepository<Category, object> categoryRepository,
+            IRepository<UserEventAttendance, object> attendanceRepository,
+            IUserAuthService userAuthService)
+            : base(eventRepository, attendanceRepository, userAuthService)
         {
             this.eventRepository = eventRepository;
             this.categoryRepository = categoryRepository;
-            this.userManager = userManager;
+            this.userAuthService = userAuthService;
         }
 
-        public async Task<EventsViewModel> LoadMyEventsAsync(string searchTerm, Guid? selectedCategory, string sortOption, string userId, int page = 1, int pageSize = 12)
+        public async Task<EventsViewModel> LoadMyEventsAsync(
+            string searchTerm,
+            Guid? selectedCategory,
+            string sortOption,
+            string userId,
+            int page = 1,
+            int pageSize = 12)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var user = await userAuthService.GetUserByIdAsync(userId);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
             }
 
             var events = await eventRepository.GetAllAttached()
-                                              .Include(e => e.Organizer)
-                                              .Include(e => e.Category)
-                                              .Include(e => e.UserEventAttendances)
-                                              .Where(e => e.isDeleted == false)
-                                              .Where(e => e.Organizer.Id == user.Id || e.UserEventAttendances.Any(uea => uea.UserId == user.Id))
-                                              .ToListAsync();
+                .Include(e => e.Organizer)
+                .Include(e => e.Category)
+                .Include(e => e.UserEventAttendances)
+                .Where(e => e.isDeleted == false)
+                .Where(e => e.Organizer.Id == user.Id || e.UserEventAttendances.Any(uea => uea.UserId == user.Id))
+                .ToListAsync();
 
             var categories = await categoryRepository.GetAllAsync();
 
@@ -99,7 +104,3 @@ namespace STAREvents.Services.Data
         }
     }
 }
-
-
-
-

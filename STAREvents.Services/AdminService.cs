@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
@@ -15,13 +14,12 @@ namespace STAREvents.Services.Data
     public class AdminService : IAdminService
     {
         private readonly IRepository<Event, object> eventRepository;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserAuthService userAuthService;
 
-        public AdminService(IRepository<Event, object> eventRepository,
-            UserManager<ApplicationUser> userManager)
+        public AdminService(IRepository<Event, object> eventRepository, IUserAuthService userAuthService)
         {
             this.eventRepository = eventRepository;
-            this.userManager = userManager;
+            this.userAuthService = userAuthService;
         }
 
         public async Task<AdminDashboardViewModel> GetAdminDashboardViewModelAsync()
@@ -51,7 +49,7 @@ namespace STAREvents.Services.Data
 
         public async Task<List<ProfileViewModel>> GetAllUsersAsync()
         {
-            var users = await userManager.Users.ToListAsync();
+            var users = await userAuthService.GetAllUsersAsync();
 
             var userViewModels = new List<ProfileViewModel>();
 
@@ -63,7 +61,7 @@ namespace STAREvents.Services.Data
                     Username = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
                     IsDeleted = user.isDeleted,
-                    IsAdmin = await userManager.IsInRoleAsync(user, Administrator)
+                    IsAdmin = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), Administrator)
                 });
             }
 
@@ -90,8 +88,8 @@ namespace STAREvents.Services.Data
 
         public async Task<int> GetTotalUsersAsync()
         {
-            var users = await userManager.Users.ToListAsync();
-            return users.Count();
+            var users = await userAuthService.GetAllUsersAsync();
+            return users.Count;
         }
 
         public async Task RecoverEventAsync(Guid id)
@@ -116,11 +114,11 @@ namespace STAREvents.Services.Data
 
         public async Task SoftDeleteUserAsync(Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
             if (user != null)
             {
                 user.isDeleted = true;
-                await userManager.UpdateAsync(user);
+                await userAuthService.UpdateUserAsync(user);
             }
         }
 
@@ -141,14 +139,15 @@ namespace STAREvents.Services.Data
 
         public async Task SoftDeleteCommentAsync(Guid commentId, string userName)
         {
-            var user = await userManager.FindByNameAsync(userName);
+            var user = await userAuthService.GetUserByNameAsync(userName);
             if (user == null)
             {
                 throw new KeyNotFoundException(UserNotFound);
             }
 
-            var eventWithComment = await eventRepository.GetAllAttached().Include(e => e.EventComments).FirstOrDefaultAsync(e => e.EventComments.Any(c => c.CommentId == commentId));
-            var isAdmin = await userManager.IsInRoleAsync(user, Administrator);
+            var eventWithComment = await eventRepository.GetAllAttached().Include(e => e.EventComments)
+                .FirstOrDefaultAsync(e => e.EventComments.Any(c => c.CommentId == commentId));
+            var isAdmin = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), Administrator);
 
             if (eventWithComment != null)
             {
@@ -163,32 +162,22 @@ namespace STAREvents.Services.Data
 
         public async Task RecoverUserAsync(Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
             if (user != null)
             {
                 user.isDeleted = false;
-                await userManager.UpdateAsync(user);
+                await userAuthService.UpdateUserAsync(user);
             }
         }
 
         public async Task RemoveAdminRole(Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                await userManager.RemoveFromRoleAsync(user, Administrator);
-            }
+            await userAuthService.RemoveRoleFromUserAsync(userId.ToString(), Administrator);
         }
 
         public async Task AddAdminRole(Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                await userManager.AddToRoleAsync(user, Administrator);
-            }
+            await userAuthService.AddRoleToUserAsync(userId.ToString(), Administrator);
         }
     }
 }
-
-
