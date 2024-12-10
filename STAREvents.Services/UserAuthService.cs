@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using STAREvents.Data.Models;
 using STAREvents.Services.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using static STAREvents.Common.ErrorMessagesConstants.UserAuthServiceMessages;
 
 namespace STAREvents.Services.Data
 {
-    public class UserAuthService : IUserAuthService
+    public class UserAuthService : BaseService, IUserAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -20,20 +18,17 @@ namespace STAREvents.Services.Data
             _userManager = userManager;
             _signInManager = signInManager;
         }
-
-        // Login
         public async Task<SignInResult> LoginAsync(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                return SignInResult.Failed; // User not found
+                return SignInResult.Failed;
             }
 
             return await _signInManager.PasswordSignInAsync(user, password, false, false);
         }
 
-        // Register
         public async Task<IdentityResult> RegisterAsync(string username, string password, string email)
         {
             var user = new ApplicationUser
@@ -44,45 +39,37 @@ namespace STAREvents.Services.Data
             var result = await _userManager.CreateAsync(user, password);
             return result;
         }
-
-        // Logout
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
         }
-
-        // Reset password
         public async Task<IdentityResult> ResetPasswordAsync(string userId, string token, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                return IdentityResult.Failed(new IdentityError { Description = UserNotFound });
             }
 
             return await _userManager.ResetPasswordAsync(user, token, newPassword);
         }
-
-        // Change password
         public async Task<IdentityResult> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                return IdentityResult.Failed(new IdentityError { Description = UserNotFound });
             }
 
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             return result;
         }
-
-        // Add role to user
         public async Task<IdentityResult> AddRoleToUserAsync(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                return IdentityResult.Failed(new IdentityError { Description = UserNotFound });
             }
 
             if (!await _userManager.IsInRoleAsync(user, roleName))
@@ -90,16 +77,15 @@ namespace STAREvents.Services.Data
                 return await _userManager.AddToRoleAsync(user, roleName);
             }
 
-            return IdentityResult.Failed(new IdentityError { Description = "User is already in this role" });
+            return IdentityResult.Failed(new IdentityError { Description = UserAlreadyInRole });
         }
 
-        // Remove role from user
         public async Task<IdentityResult> RemoveRoleFromUserAsync(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                return IdentityResult.Failed(new IdentityError { Description = UserNotFound });
             }
 
             if (await _userManager.IsInRoleAsync(user, roleName))
@@ -107,10 +93,9 @@ namespace STAREvents.Services.Data
                 return await _userManager.RemoveFromRoleAsync(user, roleName);
             }
 
-            return IdentityResult.Failed(new IdentityError { Description = "User is not in this role" });
+            return IdentityResult.Failed(new IdentityError { Description = UserIsNotInRole });
         }
 
-        // Get user roles
         public async Task<IList<string>> GetUserRolesAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

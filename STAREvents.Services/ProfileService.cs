@@ -46,6 +46,10 @@ namespace STAREvents.Services.Data
         public async Task<ProfileInputModel> LoadEditFormAsync(Guid userId)
         {
             var user = await GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException(UserNotFound);
+            }
 
             IFormFile profilePicture = null;
             if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
@@ -53,8 +57,10 @@ namespace STAREvents.Services.Data
                 var filePath = Path.Combine(webHostEnvironment.WebRootPath, user.ProfilePictureUrl.TrimStart('/'));
                 if (File.Exists(filePath))
                 {
-                    var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    profilePicture = new FormFile(fileStream, 0, fileStream.Length, "ProfilePicture", Path.GetFileName(filePath));
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        profilePicture = new FormFile(fileStream, 0, fileStream.Length, "ProfilePicture", Path.GetFileName(filePath));
+                    }
                 }
             }
 
@@ -68,6 +74,7 @@ namespace STAREvents.Services.Data
                 Email = user.Email ?? string.Empty
             };
         }
+
 
         public async Task<ProfileViewModel> LoadProfileAsync(Guid userId)
         {

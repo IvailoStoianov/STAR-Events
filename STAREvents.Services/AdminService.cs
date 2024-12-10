@@ -11,7 +11,7 @@ using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages
 
 namespace STAREvents.Services.Data
 {
-    public class AdminService : IAdminService
+    public class AdminService : BaseService, IAdminService
     {
         private readonly IRepository<Event, object> eventRepository;
         private readonly IUserAuthService userAuthService;

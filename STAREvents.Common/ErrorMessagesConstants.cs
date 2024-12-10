@@ -80,5 +80,15 @@ namespace STAREvents.Common
             public const string UserIsLoggedIn = "User logged in.";
             public const string InvalidLogInAttempt = "Invalid login attempt.";
         }
+        public static class UserAuthServiceMessages
+        {
+            public const string UserNotFound = "User not found.";
+            public const string UserAlreadyInRole = "User is already in this role.";
+            public const string UserIsNotInRole = "User is not in this role.";
+            public const string FailedToChangePassword = "Failed to change password.";
+            public const string FailedToSoftDeleteUser = "Failed to soft delete user.";
+            public const string AllFieldsAreRequired = "All fields are required.";
+            public const string InvalidEmail = "Invalid email address.";
+        }
     }
 }

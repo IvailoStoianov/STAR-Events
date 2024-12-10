@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Web.ViewModels", "ViewModels\STAREvents.Web.ViewModels.csproj", "{FF784E67-F84C-454A-A47F-EBFB4655C7BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Servies.Tests", "STAREvents.Servies.Tests\STAREvents.Servies.Tests.csproj", "{109C905F-C67E-49D9-B167-6A829747C1C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAREvents.Services.Tests", "STAREvents.Servies.Tests\STAREvents.Services.Tests.csproj", "{109C905F-C67E-49D9-B167-6A829747C1C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

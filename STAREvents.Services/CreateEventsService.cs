@@ -25,9 +25,9 @@ namespace STAREvents.Services.Data
             IWebHostEnvironment webHostEnvironment,
             IRepository<Category, object> categoryRepository)
         {
-            this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
-            this.categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-            this.webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+            this.eventRepository = eventRepository;
+            this.categoryRepository = categoryRepository;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IEnumerable<Category>> LoadCategoriesAsync()

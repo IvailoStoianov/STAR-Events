@@ -1,27 +1,19 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
 using Moq;
-using MockQueryable.Moq;
-using NUnit.Framework;
-using STAREvents.Data;
+
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository;
 using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.Data;
 using STAREvents.Web.ViewModels.Profile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
 
-namespace STAREvents.Servies.Tests
+namespace STAREvents.Services.Tests
 {
     [TestFixture]
     public class ProfileServiceTests
@@ -147,6 +139,130 @@ namespace STAREvents.Servies.Tests
             var deletedUser = await _context.Users.FindAsync(userId);
             Assert.That(deletedUser?.isDeleted, Is.True);
             _userAuthServiceMock.Verify(ua => ua.LogoutAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task LoadEditFormAsync_ShouldReturnProfile_WhenUserExists()
+        {
+            var userId = usersData[0].Id;
+            var expectedProfilePicturePath = Path.Combine("wwwroot", "images", "default-pfp.svg");
+
+            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
+                .ReturnsAsync(usersData[0]);
+
+            _mockWebHostEnvironment.Setup(whe => whe.WebRootPath)
+                .Returns("wwwroot");
+
+            File.WriteAllText(expectedProfilePicturePath, "Dummy content");
+
+            var result = await _profileService.LoadEditFormAsync(userId);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.FirstName, Is.EqualTo("John"));
+            Assert.That(result.LastName, Is.EqualTo("Doe"));
+            Assert.That(result.Username, Is.EqualTo("johndoe"));
+            Assert.That(result.Email, Is.EqualTo("john.doe@example.com"));
+            Assert.That(result.ProfilePictureUrl, Is.EqualTo("/images/default-pfp.svg"));
+            Assert.That(result.ProfilePicture, Is.Not.Null);
+            Assert.That(result.ProfilePicture.FileName, Is.EqualTo("default-pfp.svg"));
+
+            File.Delete(expectedProfilePicturePath);
+        }
+
+        [Test]
+        public async Task LoadProfileAsync_ShouldReturnProfileView_WhenUserExists()
+        {
+            var userId = usersData[0].Id;
+            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
+                .ReturnsAsync(usersData[0]);
+
+            var result = await _profileService.LoadProfileAsync(userId);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.FirstName, Is.EqualTo("John"));
+            Assert.That(result.ProfilePictureUrl, Is.EqualTo("/images/default-pfp.svg"));
+        }
+
+        [Test]
+        public void UpdateProfileAsync_ShouldThrowArgumentException_WhenModelIsInvalid()
+        {
+            var userId = usersData[0].Id;
+            var invalidModel = new ProfileInputModel
+            {
+                FirstName = "",
+                LastName = "",
+                Email = "invalid-email",
+                Username = ""
+            };
+
+            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
+            .ReturnsAsync(usersData[0]);
+
+            var ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _profileService.UpdateProfileAsync(userId, invalidModel)
+            );
+
+            Assert.That(ex.Message, Is.EqualTo(AllFieldsAreRequired));
+        }
+
+        [Test]
+        public async Task UpdateProfileAsync_ShouldThrowInvalidOperationException_WhenUpdateFails()
+        {
+            var userId = usersData[0].Id;
+            var validModel = new ProfileInputModel
+            {
+                FirstName = "Updated",
+                LastName = "Name",
+                Email = "updated@example.com",
+                Username = "updateduser"
+            };
+
+            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
+                .ReturnsAsync(usersData[0]);
+            _userAuthServiceMock.Setup(ua => ua.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Update failed" }));
+
+            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _profileService.UpdateProfileAsync(userId, validModel)
+            );
+
+            Assert.That(ex.Message, Is.EqualTo(FailedToUpdateUserProfile));
+        }
+
+        [Test]
+        public async Task ChangePasswordAsync_ShouldThrowInvalidOperationException_WhenChangeFails()
+        {
+            var userId = usersData[0].Id;
+            var changePasswordModel = new ChangePasswordViewModel
+            {
+                CurrentPassword = "OldPassword",
+                NewPassword = "NewPassword123"
+            };
+
+            _userAuthServiceMock.Setup(ua => ua.ChangePasswordAsync(userId.ToString(), "OldPassword", "NewPassword123"))
+                .ReturnsAsync(IdentityResult.Failed());
+
+            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _profileService.ChangePasswordAsync(userId, changePasswordModel)
+            );
+
+            Assert.That(ex.Message, Is.EqualTo("Failed to change password."));
+        }
+
+        [Test]
+        public async Task SoftDeleteProfileAsync_ShouldThrowInvalidOperationException_WhenUpdateFails()
+        {
+            var userId = usersData[0].Id;
+            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
+                .ReturnsAsync(usersData[0]);
+            _userAuthServiceMock.Setup(ua => ua.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Failed());
+
+            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _profileService.SoftDeleteProfileAsync(userId)
+            );
+
+            Assert.That(ex.Message, Is.EqualTo("Failed to soft delete user."));
         }
     }
 }
