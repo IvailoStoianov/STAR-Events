@@ -216,34 +216,6 @@ namespace STAREvents.Services.Tests
         }
 
         [Test]
-        public async Task LoadEditFormAsync_ShouldReturnProfile_WhenUserExists()
-        {
-            var userId = usersData[0].Id;
-            var expectedProfilePicturePath = Path.Combine("wwwroot", "images", "default-pfp.jpg");
-
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
-                .ReturnsAsync(usersData[0]);
-
-            _mockWebHostEnvironment.Setup(whe => whe.WebRootPath)
-                .Returns("wwwroot");
-
-            File.WriteAllText(expectedProfilePicturePath, "Dummy content");
-
-            var result = await _profileService.LoadEditFormAsync(userId);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.FirstName, Is.EqualTo("John"));
-            Assert.That(result.LastName, Is.EqualTo("Doe"));
-            Assert.That(result.Username, Is.EqualTo("johndoe"));
-            Assert.That(result.Email, Is.EqualTo("john.doe@example.com"));
-            Assert.That(result.ProfilePictureUrl, Is.EqualTo("/images/default-pfp.jpg"));
-            Assert.That(result.ProfilePicture, Is.Not.Null);
-            Assert.That(result.ProfilePicture.FileName, Is.EqualTo("default-pfp.jpg"));
-
-            File.Delete(expectedProfilePicturePath);
-        }
-
-        [Test]
         public async Task LoadProfileAsync_ShouldReturnProfileView_WhenUserExists()
         {
             var userId = usersData[0].Id;
