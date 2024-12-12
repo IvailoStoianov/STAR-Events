@@ -81,7 +81,7 @@ namespace STAREvents.Common
         public static class AllowedExtenstions
         {
             public static readonly string[] ImageExtensions = { ".jpg", ".jpeg", ".png", ".svg" };
-            public static readonly string[] AllowedMimeTypes = new[] { "image/jpeg", "image/png", "image/svg" };
+            public static readonly string[] AllowedMimeTypes = new[] { "image/jpeg", "image/png", "image/svg", "image/jpg" };
         }
         public static class RoleNames
         {

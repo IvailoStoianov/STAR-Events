@@ -28,7 +28,7 @@ namespace STAREvents.Common
             public const string UserNotFound = "User not found.";
             public const string FailedToUpdateUserProfile = "Failed to update user profile.";
             public const string FailedToChangePassword = "Failed to change password.";
-            public const string InvalidImageFormat = "Invalid image format. Only JPEG, PNG, and GIF are allowed.";
+            public const string InvalidImageFormat = "Invalid image format. Only JPEG, PNG, and SVG are allowed.";
             public const string ProfilePictureSizeExceeded = "File size exceeds {0} KB.";
             public const string PasswordsAreRequired = "Current password and new password must be provided.";
             public const string AllFieldsAreRequired = "All fields are required.";

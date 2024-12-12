@@ -22,6 +22,8 @@ namespace STAREvents.Web
             builder.Services.AddDbContext<STAREventsDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services

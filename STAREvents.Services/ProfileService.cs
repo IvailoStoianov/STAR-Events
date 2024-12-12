@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
@@ -10,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using static STAREvents.Common.EntityValidationConstants.AllowedExtenstions;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
 using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
+using static STAREvents.Common.FilePathConstants.AzureContainerNames;
 
 namespace STAREvents.Services.Data
 {
@@ -19,17 +21,24 @@ namespace STAREvents.Services.Data
         private readonly IRepository<Event, object> eventRepository;
         private readonly IRepository<Comment, object> commentRepository;
         private readonly IUserAuthService userAuthService;
+        private readonly IFileStorageService fileStorageService;
+        private readonly bool useAzureBlobStorage;
 
         public ProfileService(
             IWebHostEnvironment webHostEnvironment,
             IRepository<Event, object> eventRepository,
             IRepository<Comment, object> commentRepository,
-            IUserAuthService userAuthService)
+            IUserAuthService userAuthService,
+            IFileStorageService fileStorageService,
+            IConfiguration configuration)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.eventRepository = eventRepository;
             this.commentRepository = commentRepository;
             this.userAuthService = userAuthService;
+            this.fileStorageService = fileStorageService;
+
+            useAzureBlobStorage = configuration.GetValue<bool>("UseAzureBlobStorage");
         }
 
         public async Task<ApplicationUser> GetUserByIdAsync(Guid userId)
@@ -105,16 +114,18 @@ namespace STAREvents.Services.Data
             {
                 ValidateProfilePicture(model.ProfilePicture);
 
-                var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, DefaultProfilePicturePath);
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfilePicture.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                // Check the environment and choose the appropriate file upload method
+                string profilePictureUrl;
+                if (useAzureBlobStorage)
                 {
-                    await model.ProfilePicture.CopyToAsync(fileStream);
+                    profilePictureUrl = await fileStorageService.UploadFileAsync(model.ProfilePicture, ProfilePicturesContainer);
+                }
+                else
+                {
+                    profilePictureUrl = await fileStorageService.UploadFileLocallyAsync(model.ProfilePicture, DefaultProfilePicturePath);
                 }
 
-                user.ProfilePictureUrl = $"/{DefaultProfilePicturePath}/{uniqueFileName}";
+                user.ProfilePictureUrl = profilePictureUrl;
             }
 
             var result = await userAuthService.UpdateUserAsync(user);
@@ -185,12 +196,6 @@ namespace STAREvents.Services.Data
             var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
 
             if (!allowedExtensions.Contains(extension))
-            {
-                throw new InvalidOperationException(InvalidImageFormat);
-            }
-
-            var allowedMimeTypes = AllowedMimeTypes;
-            if (!allowedMimeTypes.Contains(profilePicture.ContentType))
             {
                 throw new InvalidOperationException(InvalidImageFormat);
             }

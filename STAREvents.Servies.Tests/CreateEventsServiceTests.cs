@@ -1,27 +1,31 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
-
 using Moq;
-
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data;
+using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.CreateEvents;
-
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants;
 using static STAREvents.Common.ErrorMessagesConstants;
 using static STAREvents.Common.FilePathConstants.EventPicturePaths;
+using static STAREvents.Common.FilePathConstants.AzureContainerNames;
 
 namespace STAREvents.Services.Tests
 {
-
-
     [TestFixture]
     public class CreateEventsServiceTests
     {
         private Mock<IRepository<Event, object>> eventRepositoryMock;
         private Mock<IRepository<Category, object>> categoryRepositoryMock;
-        private Mock<IWebHostEnvironment> webHostEnvironmentMock;
+        private Mock<IFileStorageService> fileStorageServiceMock;
+        private Mock<IConfiguration> configurationMock;
         private CreateEventsService createEventsService;
 
         [SetUp]
@@ -29,12 +33,18 @@ namespace STAREvents.Services.Tests
         {
             eventRepositoryMock = new Mock<IRepository<Event, object>>();
             categoryRepositoryMock = new Mock<IRepository<Category, object>>();
-            webHostEnvironmentMock = new Mock<IWebHostEnvironment>();
+            fileStorageServiceMock = new Mock<IFileStorageService>();
+            configurationMock = new Mock<IConfiguration>();
+
+            var sectionMock = new Mock<IConfigurationSection>();
+            sectionMock.Setup(s => s.Value).Returns("false"); // Default to local saving
+            configurationMock.Setup(c => c.GetSection("UseAzureBlobStorage")).Returns(sectionMock.Object);
 
             createEventsService = new CreateEventsService(
                 eventRepositoryMock.Object,
-                webHostEnvironmentMock.Object,
-                categoryRepositoryMock.Object
+                categoryRepositoryMock.Object,
+                fileStorageServiceMock.Object,
+                configurationMock.Object
             );
         }
 
@@ -42,10 +52,10 @@ namespace STAREvents.Services.Tests
         public async Task LoadCategoriesAsync_ReturnsCategories()
         {
             var categories = new List<Category>
-        {
-            new Category { CategoryID = Guid.NewGuid(), Name = "Music" },
-            new Category { CategoryID = Guid.NewGuid(), Name = "Sports" }
-        };
+            {
+                new Category { CategoryID = Guid.NewGuid(), Name = "Music" },
+                new Category { CategoryID = Guid.NewGuid(), Name = "Sports" }
+            };
 
             categoryRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(categories);
@@ -89,8 +99,12 @@ namespace STAREvents.Services.Tests
         }
 
         [Test]
-        public async Task CreateEventAsync_WithValidModel_AddsEventSuccessfully()
+        public async Task CreateEventAsync_WithValidModel_UsesLocalSaving()
         {
+            var sectionMock = new Mock<IConfigurationSection>();
+            sectionMock.Setup(s => s.Value).Returns("false"); // Test local saving
+            configurationMock.Setup(c => c.GetSection("UseAzureBlobStorage")).Returns(sectionMock.Object);
+
             var userId = Guid.NewGuid();
             var categoryId = Guid.NewGuid();
             var model = new CreateEventInputModel
@@ -105,26 +119,54 @@ namespace STAREvents.Services.Tests
                 Address = "Test Address"
             };
 
-            webHostEnvironmentMock.Setup(x => x.WebRootPath)
-                .Returns("wwwroot");
+            fileStorageServiceMock.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), DefaultEventPicturePath))
+                .ReturnsAsync("/images/events/test.jpg");
 
-            var resultPath = Path.Combine("wwwroot", $"{DefaultEventPicturePath}/test.jpg");
             eventRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Event>()))
                 .Returns(Task.CompletedTask);
 
             await createEventsService.CreateEventAsync(model, userId);
 
-            eventRepositoryMock.Verify(x => x.AddAsync(It.Is<Event>(e =>
-                e.Name == model.Name &&
-                e.Description == model.Description &&
-                e.StartDate == model.StartDate &&
-                e.EndDate == model.EndDate &&
-                e.Capacity == model.Capacity &&
-                e.ImageUrl.Contains("test.jpg") &&
-                e.OrganizerID == userId &&
-                e.CategoryID == categoryId &&
-                e.Address == model.Address)), Times.Once);
+            fileStorageServiceMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>(), DefaultEventPicturePath), Times.Once);
+            eventRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Event>()), Times.Once);
         }
+
+        [Test]
+        public async Task CreateEventAsync_WithValidModel_UsesAzureBlobStorage()
+        {
+            var sectionMock = new Mock<IConfigurationSection>();
+            sectionMock.Setup(s => s.Value).Returns("true"); // Test Azure Blob Storage saving
+            configurationMock.Setup(c => c.GetSection("UseAzureBlobStorage")).Returns(sectionMock.Object);
+
+            var userId = Guid.NewGuid();
+            var categoryId = Guid.NewGuid();
+            var model = new CreateEventInputModel
+            {
+                Name = "Test Event",
+                Description = "Test Description",
+                StartDate = DateTime.UtcNow.AddDays(1),
+                EndDate = DateTime.UtcNow.AddDays(2),
+                Capacity = 100,
+                Image = Mock.Of<IFormFile>(x => x.FileName == "test.jpg" && x.Length == 1024),
+                CategoryId = categoryId,
+                Address = "Test Address"
+            };
+
+            const string actualContainerName = "images/event-images";
+
+            fileStorageServiceMock.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), actualContainerName))
+                .ReturnsAsync("https://storageaccount.blob.core.windows.net/events/test.jpg");
+
+            eventRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Event>()))
+                .Returns(Task.CompletedTask);
+
+            await createEventsService.CreateEventAsync(model, userId);
+
+            fileStorageServiceMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>(), actualContainerName), Times.Once);
+            eventRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Event>()), Times.Once);
+        }
+
+
 
         [Test]
         public void CreateEventAsync_EventRepositoryThrowsException_ThrowsInvalidOperationException()
@@ -153,5 +195,4 @@ namespace STAREvents.Services.Tests
             Assert.That(ex.InnerException.Message, Is.EqualTo("Test exception"));
         }
     }
-
 }

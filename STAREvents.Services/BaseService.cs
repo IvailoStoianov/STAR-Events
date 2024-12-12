@@ -12,5 +12,10 @@ namespace STAREvents.Services
             }
             return true;
         }
+        public bool IsAzureEnvironment()
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            return environment == "Production";
+        }
     }
 }
