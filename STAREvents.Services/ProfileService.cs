@@ -129,7 +129,7 @@ namespace STAREvents.Services.Data
             var result = await userAuthService.ChangePasswordAsync(userId.ToString(), model.CurrentPassword, model.NewPassword);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException("Failed to change password.");
+                throw new InvalidOperationException(FailedToChangePassword);
             }
 
             return result;
@@ -159,7 +159,7 @@ namespace STAREvents.Services.Data
             var result = await userAuthService.UpdateUserAsync(user);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException("Failed to soft delete user.");
+                throw new InvalidOperationException(FaildSoftDeleteUser);
             }
 
             await userAuthService.LogoutAsync();

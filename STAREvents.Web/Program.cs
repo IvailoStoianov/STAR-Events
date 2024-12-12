@@ -18,10 +18,6 @@ namespace STAREvents.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //Should remove later
-            builder.Logging.ClearProviders(); 
-            builder.Logging.AddConsole();
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<STAREventsDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -67,7 +63,6 @@ namespace STAREvents.Web
                 logger.LogInformation("Finished handling request.");
             });
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

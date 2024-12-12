@@ -33,6 +33,7 @@ namespace STAREvents.Common
             public const string PasswordsAreRequired = "Current password and new password must be provided.";
             public const string AllFieldsAreRequired = "All fields are required.";
             public const string InvalidEmail = "Invalid email address.";
+            public const string FaildSoftDeleteUser = "Failed to soft delete user.";
         }
         public static class ProfileControllerErrorMessages
         {

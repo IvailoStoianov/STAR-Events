@@ -25,10 +25,6 @@ public class EventsController : Controller
     public async Task<IActionResult> EventDetails(Guid id)
     {
         string? userName = User?.Identity?.Name;
-        if (string.IsNullOrEmpty(userName))
-        {
-            return Unauthorized();
-        }
         var eventDetails = await _eventsService.GetEventDetailsAsync(id, userName);
         if (eventDetails == null)
         {
