@@ -5,6 +5,7 @@ using STAREvents.Data.Models;
 using STAREvents.Services.Data.Interfaces;
 
 using static STAREvents.Common.ErrorMessagesConstants.UserAuthServiceMessages;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 namespace STAREvents.Services.Data
 {
@@ -107,9 +108,10 @@ namespace STAREvents.Services.Data
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
         {
-            return await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
+            return user;
         }
 
         public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
@@ -121,9 +123,10 @@ namespace STAREvents.Services.Data
             return await _userManager.Users.ToListAsync();
         }
 
-        public async Task<ApplicationUser> GetUserByNameAsync(string username)
+        public async Task<ApplicationUser?> GetUserByNameAsync(string username)
         {
-            return await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(username);
+            return user;
         }
 
         public async Task<bool> IsUserInRoleAsync(string userId, string roleName)

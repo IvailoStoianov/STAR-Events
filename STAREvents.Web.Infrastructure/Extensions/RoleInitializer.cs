@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using STAREvents.Data.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace STAREvents.Web.Infrastructure.Extensions
 {
@@ -10,8 +8,13 @@ namespace STAREvents.Web.Infrastructure.Extensions
     {
         public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration)
         {
-            string adminEmail = configuration["AdminCredentials:Email"];
-            string password = configuration["AdminCredentials:Password"];
+            string? adminEmail = configuration["AdminCredentials:Email"];
+            string? password = configuration["AdminCredentials:Password"];
+
+            if (adminEmail == null || password == null)
+            {
+                throw new InvalidOperationException("Admin credentials are not configured properly.");
+            }
 
             if (await roleManager.FindByNameAsync("Admin") == null)
             {

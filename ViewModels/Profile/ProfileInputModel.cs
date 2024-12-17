@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using STAREvents.Data.Models;
 using STAREvents.Services.Mapping;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static STAREvents.Common.EntityValidationConstants.ApplicationUserConstants;
 using static STAREvents.Common.ErrorMessagesConstants.ApplicationUserValidationErrorMessages;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 namespace STAREvents.Web.ViewModels.Profile
 {
@@ -32,7 +28,7 @@ namespace STAREvents.Web.ViewModels.Profile
         public string Username { get; set; } = string.Empty;
 
         [Required]
-        [EmailAddress(ErrorMessage = InvalidEmailAddress)]
+        [EmailAddress(ErrorMessage = InvalidEmail)]
         public string Email { get; set; } = string.Empty;
     }
 }

@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using STAREvents.Common;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Profile;
 using System.ComponentModel.DataAnnotations;
-using STAREvents.Common;
 using static STAREvents.Common.EntityValidationConstants.AllowedExtenstions;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
-using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 using static STAREvents.Common.FilePathConstants.AzureContainerNames;
+using static STAREvents.Common.FilePathConstants.ProfilePicturePaths;
 using static STAREvents.Common.ModelErrorsConstants.Password;
-using Microsoft.AspNetCore.Routing;
 
 namespace STAREvents.Services.Data
 {
@@ -52,34 +49,34 @@ namespace STAREvents.Services.Data
         public async Task<ServiceResult<ProfileInputModel>> LoadEditFormAsync(Guid userId)
         {
             var userResult = await GetUserByIdAsync(userId);
-            if (!userResult.Succeeded)
+            if (!userResult.Succeeded || userResult.Data == null)
                 return ServiceResult<ProfileInputModel>.Failure(userResult.Errors);
 
             var user = userResult.Data;
             return ServiceResult<ProfileInputModel>.Success(new ProfileInputModel
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ProfilePictureUrl = user.ProfilePictureUrl,
-                Username = user.UserName ?? string.Empty,
-                Email = user.Email ?? string.Empty
+                FirstName = user?.FirstName ?? string.Empty,
+                LastName = user?.LastName ?? string.Empty,
+                ProfilePictureUrl = user?.ProfilePictureUrl ?? string.Empty,
+                Username = user?.UserName ?? string.Empty,
+                Email = user?.Email ?? string.Empty
             });
         }
 
         public async Task<ServiceResult<ProfileViewModel>> LoadProfileAsync(Guid userId)
         {
             var userResult = await GetUserByIdAsync(userId);
-            if (!userResult.Succeeded)
+            if (!userResult.Succeeded || userResult.Data == null)
                 return ServiceResult<ProfileViewModel>.Failure(userResult.Errors);
 
             var user = userResult.Data;
             return ServiceResult<ProfileViewModel>.Success(new ProfileViewModel
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ProfilePictureUrl = user.ProfilePictureUrl,
-                Username = user.UserName ?? string.Empty,
-                Email = user.Email ?? string.Empty
+                FirstName = user?.FirstName ?? string.Empty,
+                LastName = user?.LastName ?? string.Empty,
+                ProfilePictureUrl = user?.ProfilePictureUrl ?? string.Empty,
+                Username = user?.UserName ?? string.Empty,
+                Email = user?.Email ?? string.Empty
             });
         }
 
@@ -102,40 +99,48 @@ namespace STAREvents.Services.Data
                 return ServiceResult.Failure(InvalidEmail);
             }
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Email = model.Email;
-            user.UserName = model.Username;
-
-            if (model.ProfilePicture != null)
+            if (user != null)
             {
-                var extension = Path.GetExtension(model.ProfilePicture.FileName).ToLowerInvariant();
-                if (!ImageExtensions.Contains(extension))
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Email = model.Email;
+                user.UserName = model.Username;
+
+                if (model.ProfilePicture != null)
                 {
-                    return ServiceResult.Failure(InvalidImageFormat);
+                    var extension = Path.GetExtension(model.ProfilePicture.FileName).ToLowerInvariant();
+                    if (!ImageExtensions.Contains(extension))
+                    {
+                        return ServiceResult.Failure(InvalidImageFormat);
+                    }
+
+                    string profilePictureUrl;
+                    if (useAzureBlobStorage)
+                    {
+                        profilePictureUrl = await fileStorageService.UploadFileAsync(model.ProfilePicture, ProfilePicturesContainer);
+                    }
+                    else
+                    {
+                        profilePictureUrl = await fileStorageService.UploadFileLocallyAsync(model.ProfilePicture, DefaultProfilePicturePath);
+                    }
+
+                    user.ProfilePictureUrl = profilePictureUrl;
                 }
 
-                string profilePictureUrl;
-                if (useAzureBlobStorage)
-                {
-                    profilePictureUrl = await fileStorageService.UploadFileAsync(model.ProfilePicture, ProfilePicturesContainer);
-                }
-                else
-                {
-                    profilePictureUrl = await fileStorageService.UploadFileLocallyAsync(model.ProfilePicture, DefaultProfilePicturePath);
-                }
-
-                user.ProfilePictureUrl = profilePictureUrl;
+                var result = await userAuthService.UpdateUserAsync(user);
+                return result.Succeeded ? ServiceResult.Success() : ServiceResult.Failure(FailedToUpdateUserProfile);
             }
 
-            var result = await userAuthService.UpdateUserAsync(user);
-            return result.Succeeded ? ServiceResult.Success() : ServiceResult.Failure(FailedToUpdateUserProfile);
+            return ServiceResult.Failure(UserNotFound);
         }
 
         public async Task<ServiceResult> ChangePasswordAsync(Guid userId, ChangePasswordViewModel model)
         {
             if (model.NewPassword != model.ConfirmPassword)
                 return ServiceResult.Failure(PasswordsDontMatch);
+
+            if (string.IsNullOrEmpty(model.CurrentPassword) || string.IsNullOrEmpty(model.NewPassword))
+                return ServiceResult.Failure(AllFieldsAreRequired);
 
             var result = await userAuthService.ChangePasswordAsync(userId.ToString(), model.CurrentPassword, model.NewPassword);
 
@@ -147,7 +152,7 @@ namespace STAREvents.Services.Data
         public async Task<ServiceResult> SoftDeleteProfileAsync(Guid userId)
         {
             var userResult = await GetUserByIdAsync(userId);
-            if (!userResult.Succeeded)
+            if (!userResult.Succeeded || userResult.Data == null)
                 return ServiceResult.Failure(userResult.Errors);
 
             var user = userResult.Data;

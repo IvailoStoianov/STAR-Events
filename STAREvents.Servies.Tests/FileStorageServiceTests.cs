@@ -73,7 +73,9 @@ namespace STAREvents.Services.Tests
         {
             var invalidConfigurationMock = new Mock<IConfiguration>();
             var azureBlobSectionMock = new Mock<IConfigurationSection>();
-            azureBlobSectionMock.Setup(s => s["ConnectionString"]).Returns<string>(null);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            azureBlobSectionMock.Setup(s => s["ConnectionString"]).Returns<string?>(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             invalidConfigurationMock.Setup(c => c.GetSection("AzureBlobStorage")).Returns(azureBlobSectionMock.Object);
 
             Assert.Throws<ArgumentNullException>(() => new FileStorageService(invalidConfigurationMock.Object));

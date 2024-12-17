@@ -6,21 +6,15 @@ namespace STAREvents.Data.Models
 {
     public class Notification
     {
-        public Notification()
-        {
-            NotificationId = Guid.NewGuid();
-            CreatedOn = DateTime.UtcNow;
-        }
-
         [Key]
-        public Guid NotificationId { get; set; }
+        public Guid NotificationId { get; set; } = Guid.NewGuid();
 
         [Required]
         [MaxLength(MaxContentLength)]
         public string Message { get; set; } = string.Empty;
 
         [Required]
-        public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [Required]
         public bool IsRead { get; set; } = false;

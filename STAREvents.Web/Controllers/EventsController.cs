@@ -50,7 +50,7 @@ namespace STAREvents.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> EventDetails(Guid id)
         {
-            string? userName = User?.Identity?.Name;
+            string userName = User?.Identity?.Name ?? string.Empty;
             var result = await _eventsService.GetEventDetailsAsync(id, userName);
 
             if (!result.Succeeded)
@@ -76,7 +76,13 @@ namespace STAREvents.Web.Controllers
                 return View(model);
             }
 
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = Guid.Parse(userIdValue);
             var result = await _eventsService.CreateEventAsync(model, userId);
 
             if (!result.Succeeded)
@@ -139,11 +145,13 @@ namespace STAREvents.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> JoinEvent(Guid eventId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
+            {
                 return Unauthorized();
+            }
 
-            var result = await _eventsService.JoinEventAsync(eventId, Guid.Parse(userId));
+            var result = await _eventsService.JoinEventAsync(eventId, Guid.Parse(userIdValue));
 
             if (!result.Succeeded)
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
@@ -154,11 +162,13 @@ namespace STAREvents.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> LeaveEvent(Guid eventId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
+            {
                 return Unauthorized();
+            }
 
-            var result = await _eventsService.LeaveEventAsync(eventId, Guid.Parse(userId));
+            var result = await _eventsService.LeaveEventAsync(eventId, Guid.Parse(userIdValue));
 
             if (!result.Succeeded)
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
@@ -184,11 +194,13 @@ namespace STAREvents.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteComment(Guid commentId, Guid eventId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdValue == null)
+            {
                 return Unauthorized();
+            }
 
-            var result = await _eventsService.SoftDeleteCommentAsync(commentId, Guid.Parse(userId));
+            var result = await _eventsService.SoftDeleteCommentAsync(commentId, Guid.Parse(userIdValue));
 
             if (!result.Succeeded)
                 TempData["ErrorMessage"] = result.Errors.FirstOrDefault();

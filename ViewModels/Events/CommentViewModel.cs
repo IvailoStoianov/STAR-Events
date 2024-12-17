@@ -10,9 +10,9 @@ namespace STAREvents.Web.ViewModels.Events
     public class CommentViewModel
     {
         public Guid CommentId { get; set; }
-        public string Content { get; set; }
+        public string Content { get; set; } = null!;
         public DateTime PostedDate { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = null!;
         public bool isDeleted { get; set; }
     }
 }

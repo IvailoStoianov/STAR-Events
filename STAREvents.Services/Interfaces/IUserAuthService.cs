@@ -18,10 +18,10 @@ namespace STAREvents.Services.Data.Interfaces
         Task<IdentityResult> AddRoleToUserAsync(string userId, string roleName);
         Task<IdentityResult> RemoveRoleFromUserAsync(string userId, string roleName);
         Task<IList<string>> GetUserRolesAsync(string userId);
-        Task<ApplicationUser> GetUserByIdAsync(string userId);
+        Task<ApplicationUser?> GetUserByIdAsync(string userId);
         Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
         Task<List<ApplicationUser>> GetAllUsersAsync();
-        Task<ApplicationUser> GetUserByNameAsync(string username);
+        Task<ApplicationUser?> GetUserByNameAsync(string username);
         Task<bool> IsUserInRoleAsync(string userId, string roleName);
     }
 

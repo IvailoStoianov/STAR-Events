@@ -42,7 +42,7 @@
                                 <a class="nav-link" asp-area="" asp-controller="Notifications" asp-action="MyNotifications">Notifications</a>
                             </li>
                         }
-                        @if (User.IsInRole("Admin"))
+                        @if (User?.IsInRole("Admin") == true)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="Admin" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>

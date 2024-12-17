@@ -5,7 +5,7 @@
         public bool Succeeded { get; }
         public List<string> Errors { get; }
 
-        protected ServiceResult(bool succeeded, List<string> errors = null)
+        protected ServiceResult(bool succeeded, List<string>? errors = null)
         {
             Succeeded = succeeded;
             Errors = errors ?? new List<string>();
@@ -20,18 +20,20 @@
 
     public class ServiceResult<T> : ServiceResult
     {
-        public T Data { get; }
+        public T? Data { get; }
 
-        private ServiceResult(bool succeeded, T data = default, List<string> errors = null)
+        private ServiceResult(bool succeeded, T? data = default, List<string>? errors = null)
             : base(succeeded, errors)
         {
             Data = data;
         }
 
         public static ServiceResult<T> Success(T data) => new ServiceResult<T>(true, data);
-
+#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
         public static ServiceResult<T> Failure(List<string> errors) => new ServiceResult<T>(false, default, errors);
 
+
         public static ServiceResult<T> Failure(string error) => new ServiceResult<T>(false, default, new List<string> { error });
+#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
     }
 }

@@ -1,19 +1,18 @@
-﻿using MockQueryable;
+﻿using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using MockQueryable;
 using Moq;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.CreateEvents;
-using Microsoft.Extensions.Configuration;
-using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
-using static STAREvents.Common.ModelErrorsConstants.Date;
-using System.Linq.Expressions;
-using Microsoft.AspNetCore.Http;
 using STAREvents.Web.ViewModels.Events;
 using static STAREvents.Common.ErrorMessagesConstants;
-using static STAREvents.Common.FilePathConstants;
-using System.Text;
+using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
+using static STAREvents.Common.ModelErrorsConstants.Date;
 
 namespace STAREvents.Services.Tests
 {
@@ -71,7 +70,9 @@ namespace STAREvents.Services.Tests
             var result = await _eventsService.LoadEventsAsync("", null, "Recent", 1, 10);
 
             Assert.That(result.Succeeded, Is.True);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Events.Count, Is.EqualTo(2));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         [Test]
@@ -126,7 +127,7 @@ namespace STAREvents.Services.Tests
         public async Task JoinEventAsync_ReturnsFailure_WhenUserNotFound()
         {
             var userId = Guid.NewGuid();
-            _userAuthServiceMock.Setup(x => x.GetUserByIdAsync(userId.ToString())).ReturnsAsync((ApplicationUser)null);
+            _userAuthServiceMock.Setup(x => x.GetUserByIdAsync(userId.ToString())).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _eventsService.JoinEventAsync(Guid.NewGuid(), userId);
 
@@ -149,9 +150,11 @@ namespace STAREvents.Services.Tests
                 .Setup(x => x.GetByIdAsync(eventId))
                 .ReturnsAsync(eventEntity);
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _attendanceRepositoryMock
                 .Setup(x => x.FirstOrDefaultAsync(It.IsAny<Expression<Func<UserEventAttendance, bool>>>()))
-                .ReturnsAsync((UserEventAttendance)null);
+                .ReturnsAsync((UserEventAttendance?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.JoinEventAsync(eventId, userId);
 
@@ -164,7 +167,7 @@ namespace STAREvents.Services.Tests
         [Test]
         public async Task AddCommentAsync_ReturnsFailure_WhenUserNotFound()
         {
-            _userAuthServiceMock.Setup(x => x.GetUserByNameAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            _userAuthServiceMock.Setup(x => x.GetUserByNameAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _eventsService.AddCommentAsync(Guid.NewGuid(), "TestUser", "Test Comment");
 
@@ -175,7 +178,9 @@ namespace STAREvents.Services.Tests
         [Test]
         public async Task SoftDeleteEventAsync_ReturnsFailure_WhenEventNotFound()
         {
-            _eventRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Event)null);
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _eventRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Event?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.SoftDeleteEventAsync(Guid.NewGuid());
 
@@ -207,7 +212,9 @@ namespace STAREvents.Services.Tests
             var result = await _eventsService.LoadEventsAsync("", null, "Recent", 1, 10);
 
             Assert.That(result.Succeeded, Is.True);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Events.Count, Is.EqualTo(0));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         [Test]
@@ -259,8 +266,10 @@ namespace STAREvents.Services.Tests
 
             _userAuthServiceMock.Setup(x => x.GetUserByIdAsync(userId.ToString()))
                 .ReturnsAsync(new ApplicationUser { Id = userId });
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _attendanceRepositoryMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<Expression<Func<UserEventAttendance, bool>>>()))
-                .ReturnsAsync((UserEventAttendance)null);
+                .ReturnsAsync((UserEventAttendance?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.LeaveEventAsync(eventId, userId);
 
@@ -282,9 +291,11 @@ namespace STAREvents.Services.Tests
 
             var searchTerm = "Test Event";
 
-            var result = await _eventsService.LoadEventsAsync(searchTerm, null, null, 1, 10);
+            var result = await _eventsService.LoadEventsAsync(searchTerm, null, string.Empty, 1, 10);
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Events.Count, Is.EqualTo(1));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Events.First().Name, Is.EqualTo("Test Event"));
         }
 
@@ -296,7 +307,7 @@ namespace STAREvents.Services.Tests
             {
                 EventId = eventId,
                 Name = "Old Event",
-                ImageUrl = null
+                ImageUrl = string.Empty
             };
 
             var model = new EditEventInputModel
@@ -343,7 +354,9 @@ namespace STAREvents.Services.Tests
                 CategoryId = Guid.NewGuid()
             };
 
-            _eventRepositoryMock.Setup(x => x.GetByIdAsync(model.EventId)).ReturnsAsync((Event)null);
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _eventRepositoryMock.Setup(x => x.GetByIdAsync(model.EventId)).ReturnsAsync((Event?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.EditEventAsync(model);
 
@@ -381,8 +394,10 @@ namespace STAREvents.Services.Tests
 
             _userAuthServiceMock.Setup(x => x.GetUserByIdAsync(userId.ToString()))
                 .ReturnsAsync(new ApplicationUser { Id = userId });
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _attendanceRepositoryMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<Expression<Func<UserEventAttendance, bool>>>()))
-                .ReturnsAsync((UserEventAttendance)null);
+                .ReturnsAsync((UserEventAttendance?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.LeaveEventAsync(eventId, userId);
 
@@ -443,14 +458,18 @@ namespace STAREvents.Services.Tests
             var result = await _eventsService.GetEditEventAsync(eventId);
 
             Assert.That(result.Succeeded, Is.True);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Name, Is.EqualTo("Test Event"));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         [Test]
         public async Task GetEditEventAsync_ReturnsFailure_WhenEventNotFound()
         {
             var eventId = Guid.NewGuid();
-            _eventRepositoryMock.Setup(x => x.GetByIdAsync(eventId)).ReturnsAsync((Event)null);
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _eventRepositoryMock.Setup(x => x.GetByIdAsync(eventId)).ReturnsAsync((Event?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _eventsService.GetEditEventAsync(eventId);
 
@@ -474,7 +493,9 @@ namespace STAREvents.Services.Tests
             var result = await _eventsService.LoadMyEventsAsync("", null, "", userId.ToString(), 1, 10);
 
             Assert.That(result.Succeeded, Is.True);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Events.Count, Is.EqualTo(2));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }

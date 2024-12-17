@@ -56,9 +56,11 @@ namespace STAREvents.Services.Tests
                 .Setup(r => r.GetAllAttached())
                 .Returns(mockQueryableEvents.Object);
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _notificationRepositoryMock
                 .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Notification, bool>>>()))
-                .ReturnsAsync((Notification)null);
+                .ReturnsAsync((Notification?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             await _notificationsService.SendEventNotificationsAsync();
 
@@ -106,10 +108,12 @@ namespace STAREvents.Services.Tests
                 .Returns(mockEventsDbSet.Object);
 
             var mockNotificationsDbSet = notifications.AsQueryable().BuildMockDbSet();
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _notificationRepositoryMock
                 .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Notification, bool>>>()))
                 .ReturnsAsync((Expression<Func<Notification, bool>> predicate) =>
                     notifications.AsQueryable().FirstOrDefault(predicate));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             await _notificationsService.SendEventNotificationsAsync();
 
@@ -138,7 +142,9 @@ namespace STAREvents.Services.Tests
             var result = await _notificationsService.GetUserNotificationsAsync(userId);
 
             Assert.That(result.Succeeded, Is.True);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data.Count, Is.EqualTo(1));
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             Assert.That(result.Data[0].Message, Is.EqualTo("Unread Notification 1"));
         }
 
@@ -172,9 +178,11 @@ namespace STAREvents.Services.Tests
             var notificationId = Guid.NewGuid();
             var userId = Guid.NewGuid();
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             _notificationRepositoryMock
                 .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Notification, bool>>>()))
-                .ReturnsAsync((Notification)null);
+                .ReturnsAsync((Notification?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
             var result = await _notificationsService.MarkAsReadAsync(notificationId, userId);
 

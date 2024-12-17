@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using STAREvents.Data.Models;
 using STAREvents.Web.ViewModels.Login;
-using static STAREvents.Common.ErrorMessagesConstants.LoginErrorMessages;
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
+using static STAREvents.Common.ErrorMessagesConstants.LoginErrorMessages;
 using static STAREvents.Common.UrlRedirectConstants.LogInConstants;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 namespace STAREvents.Web.Areas.Identity.Pages.Account
 {
@@ -43,9 +36,9 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 return RedirectToPage("/Index");
             }
@@ -67,7 +60,7 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
 
@@ -84,13 +77,17 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
                         return Page();
                     }
 
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                    var result = await _signInManager.PasswordSignInAsync(user?.UserName ?? string.Empty, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
                     if (result.Succeeded)
                     {
-                        if (await _userManager.IsInRoleAsync(user, Administrator))
+                        if (user != null && await _userManager.IsInRoleAsync(user, Administrator))
                         {
-                            return LocalRedirect(Url.Page(AdminDashboard, new { area = Administrator }));
+                            var adminDashboardUrl = Url.Page(AdminDashboard, new { area = Administrator });
+                            if (adminDashboardUrl != null)
+                            {
+                                return LocalRedirect(adminDashboardUrl);
+                            }
                         }
                         _logger.LogInformation(UserIsLoggedIn);
                         return LocalRedirect(returnUrl);
@@ -108,7 +105,6 @@ namespace STAREvents.Web.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

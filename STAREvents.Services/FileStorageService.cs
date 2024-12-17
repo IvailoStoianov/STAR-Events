@@ -17,7 +17,7 @@ namespace STAREvents.Services.Data
         public FileStorageService(IConfiguration configuration)
         {
             var azureBlobSettings = configuration.GetSection("AzureBlobStorage");
-            connectionString = azureBlobSettings["ConnectionString"];
+            connectionString = azureBlobSettings["ConnectionString"] ?? throw new ArgumentNullException("AzureBlobStorage:ConnectionString");
             blobServiceClient = new BlobServiceClient(connectionString);
         }
 

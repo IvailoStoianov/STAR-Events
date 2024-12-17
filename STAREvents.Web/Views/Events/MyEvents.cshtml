@@ -64,7 +64,7 @@ else
                                 <p class="card-text"><strong>Organizer:</strong> @eventView.Organizer.FirstName @eventView.Organizer.LastName</p>
                                 <p class="card-text"><strong>Address:</strong> @eventView.Address</p>
 
-                                @if (User.Identity.IsAuthenticated)
+                                @if (User?.Identity?.IsAuthenticated == true)
                                 {
                                     <div class="d-flex">
                                         @if (eventView.HasJoined)

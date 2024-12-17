@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using STAREvents.Common;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Web.ViewModels.Events;
 using STAREvents.Web.ViewModels.CreateEvents;
+using STAREvents.Web.ViewModels.Events;
 using static STAREvents.Common.ErrorMessagesConstants;
 using static STAREvents.Common.FilePathConstants;
 using static STAREvents.Common.ModelErrorsConstants;
-using STAREvents.Common;
-using Microsoft.Extensions.Configuration;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 namespace STAREvents.Services.Data
 {
@@ -52,7 +52,7 @@ namespace STAREvents.Services.Data
             var totalEvents = filteredEvents.Count();
             var paginatedEvents = filteredEvents.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            var eventViewModels = paginatedEvents.Select(MapToEventViewModel).ToList();
+            var eventViewModels = paginatedEvents.Select(e => MapToEventViewModel(e, Guid.Empty)).ToList();
 
             var viewModel = new EventsViewModel
             {
@@ -97,7 +97,7 @@ namespace STAREvents.Services.Data
                 return ServiceResult<Guid>.Failure(new List<string> { Date.StartDateBeforeEndDate });
             }
 
-            string imageUrl = null;
+            string imageUrl = string.Empty;
             if (model.Image != null)
             {
                 imageUrl = useAzureBlobStorage
@@ -183,7 +183,7 @@ namespace STAREvents.Services.Data
             var user = await _userAuthService.GetUserByIdAsync(userId.ToString());
             if (user == null)
             {
-                return ServiceResult.Failure(new List<string> { EventsServiceErrorMessages.UserNotFound });
+                return ServiceResult.Failure(new List<string> { UserNotFound });
             }
 
             var eventEntity = await _eventRepository.GetByIdAsync(eventId);
@@ -217,7 +217,7 @@ namespace STAREvents.Services.Data
         {
             var user = await _userAuthService.GetUserByIdAsync(userId.ToString());
             if (user == null)
-                return ServiceResult.Failure(EventsServiceErrorMessages.UserNotFound);
+                return ServiceResult.Failure(UserNotFound);
 
             var attendance = await _attendanceRepository.FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == user.Id);
             if (attendance != null)
@@ -240,7 +240,7 @@ namespace STAREvents.Services.Data
         {
             var user = await _userAuthService.GetUserByNameAsync(userName);
             if (user == null)
-                return ServiceResult.Failure(EventsServiceErrorMessages.UserNotFound);
+                return ServiceResult.Failure(UserNotFound);
 
             await _commentRepository.AddAsync(new Comment
             {
@@ -323,7 +323,7 @@ namespace STAREvents.Services.Data
 
             var viewModel = new EventsViewModel
             {
-                Events = paginatedEvents.Select(e => MapToEventViewModel(e)).ToList(),
+                Events = paginatedEvents.Select(e => MapToEventViewModel(e, userGuid)).ToList(),
                 Categories = categories.ToList(),
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling(totalEvents / (double)pageSize)
@@ -350,7 +350,7 @@ namespace STAREvents.Services.Data
             };
         }
 
-        private EventViewModel MapToEventViewModel(Event e) => new()
+        private EventViewModel MapToEventViewModel(Event e, Guid userId) => new()
         {
             EventId = e.EventId,
             Name = e.Name,
@@ -365,7 +365,8 @@ namespace STAREvents.Services.Data
             OrganizerID = e.OrganizerID,
             Organizer = e.Organizer,
             Category = e.Category,
-            Address = e.Address
+            Address = e.Address,
+            HasJoined = e.UserEventAttendances.Any(uea => uea.UserId == userId)
         };
 
         private EventViewModel MapToDetailedEventViewModel(Event e, bool hasJoined) => new()

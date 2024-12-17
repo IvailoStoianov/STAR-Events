@@ -9,6 +9,7 @@ using STAREvents.Services.Data.Interfaces;
 using STAREvents.Web.ViewModels.Profile;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
 using static STAREvents.Common.ModelErrorsConstants.Password;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 
 namespace STAREvents.Services.Tests
@@ -74,7 +75,7 @@ namespace STAREvents.Services.Tests
         [Test]
         public async Task GetUserByIdAsync_ReturnsFailure_WhenUserDoesNotExist()
         {
-            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _profileService.GetUserByIdAsync(Guid.NewGuid());
 
@@ -291,7 +292,7 @@ namespace STAREvents.Services.Tests
         public async Task LoadEditFormAsync_ReturnsFailure_WhenUserNotFound()
         {
             _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             var result = await _profileService.LoadEditFormAsync(_validUserId);
 
@@ -303,7 +304,7 @@ namespace STAREvents.Services.Tests
         public async Task LoadProfileAsync_ReturnsFailure_WhenUserNotFound()
         {
             _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             var result = await _profileService.LoadProfileAsync(_validUserId);
 
@@ -318,6 +319,8 @@ namespace STAREvents.Services.Tests
 
             Assert.That(result.Succeeded, Is.True);
             var data = result.Data;
+
+            Assert.That(data, Is.Not.Null); 
             Assert.That(data.FirstName, Is.EqualTo(_validUser.FirstName));
             Assert.That(data.LastName, Is.EqualTo(_validUser.LastName));
             Assert.That(data.Email, Is.EqualTo(_validUser.Email));
@@ -332,6 +335,8 @@ namespace STAREvents.Services.Tests
 
             Assert.That(result.Succeeded, Is.True);
             var data = result.Data;
+
+            Assert.That(data, Is.Not.Null); 
             Assert.That(data.FirstName, Is.EqualTo(_validUser.FirstName));
             Assert.That(data.LastName, Is.EqualTo(_validUser.LastName));
             Assert.That(data.Email, Is.EqualTo(_validUser.Email));

@@ -8,6 +8,7 @@ using STAREvents.Services.Data;
 
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
 using static STAREvents.Common.ErrorMessagesConstants.UserAuthServiceMessages;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
 
 namespace STAREvents.Services.Tests
 {
@@ -33,7 +34,7 @@ namespace STAREvents.Services.Tests
         public async Task LoginAsync_UserNotFound_ReturnsSignInFailed()
         {
             userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             var result = await userAuthService.LoginAsync("testuser", "password");
 
@@ -80,7 +81,7 @@ namespace STAREvents.Services.Tests
         public async Task ResetPasswordAsync_UserNotFound_ReturnsFailed()
         {
             userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             var result = await userAuthService.ResetPasswordAsync("userId", "token", "newPassword");
 
@@ -106,7 +107,7 @@ namespace STAREvents.Services.Tests
         public async Task ChangePasswordAsync_UserNotFound_ReturnsFailed()
         {
             userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             var result = await userAuthService.ChangePasswordAsync("userId", "currentPassword", "newPassword");
 
@@ -217,7 +218,7 @@ namespace STAREvents.Services.Tests
         [Test]
         public async Task GetUserByNameAsync_ReturnsNull_WhenUserNotFound()
         {
-            userManagerMock.Setup(x => x.FindByNameAsync("testuser")).ReturnsAsync((ApplicationUser)null);
+            userManagerMock.Setup(x => x.FindByNameAsync("testuser")).ReturnsAsync((ApplicationUser?)null);
 
             var result = await userAuthService.GetUserByNameAsync("testuser");
 
@@ -267,7 +268,7 @@ namespace STAREvents.Services.Tests
         [Test]
         public async Task RemoveRoleFromUserAsync_ReturnsFailure_WhenUserNotFound()
         {
-            userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser?)null);
 
             var result = await userAuthService.RemoveRoleFromUserAsync("invalidId", "Admin");
 
@@ -291,7 +292,9 @@ namespace STAREvents.Services.Tests
         private static Mock<UserManager<ApplicationUser>> MockUserManager()
         {
             var store = new Mock<IUserStore<ApplicationUser>>();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             return new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         private static Mock<SignInManager<ApplicationUser>> MockSignInManager()
@@ -299,7 +302,9 @@ namespace STAREvents.Services.Tests
             var userManager = MockUserManager();
             var contextAccessor = new Mock<IHttpContextAccessor>();
             var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             return new Mock<SignInManager<ApplicationUser>>(userManager.Object, contextAccessor.Object, claimsFactory.Object, null, null, null, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
 

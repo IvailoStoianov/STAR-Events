@@ -9,6 +9,8 @@ using STAREvents.Common;
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
 using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
 using static STAREvents.Common.ErrorMessagesConstants.AdminServiceErrorMessages;
+using static STAREvents.Common.ErrorMessagesConstants.SharedErrorMessages;
+
 
 namespace STAREvents.Services.Data
 {
@@ -33,8 +35,8 @@ namespace STAREvents.Services.Data
                 return ServiceResult<AdminDashboardViewModel>.Failure(FailedToLoadDashboardData);
             }
 
-            var events = eventsResult.Data;
-            var users = usersResult.Data;
+            var events = eventsResult.Data ?? new List<EventViewModel>();
+            var users = usersResult.Data ?? new List<ProfileViewModel>();
 
             var dashboardViewModel = new AdminDashboardViewModel
             {

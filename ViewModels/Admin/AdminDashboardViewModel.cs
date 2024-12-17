@@ -10,8 +10,8 @@ namespace STAREvents.Web.ViewModels.Admin
 {
     public class AdminDashboardViewModel
     {
-        public List<EventViewModel> Events { get; set; }
-        public List<ProfileViewModel> Users { get; set; }
+        public List<EventViewModel> Events { get; set; } = null!;
+        public List<ProfileViewModel> Users { get; set; } = null!;
         public int TotalEvents { get; set; }
         public int UpcomingEvents { get; set; }
         public int PastEvents { get; set; }
