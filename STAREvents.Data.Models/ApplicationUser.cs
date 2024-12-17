@@ -18,14 +18,12 @@ namespace STAREvents.Data.Models
         }
         [Required]
         [MaxLength(MaxFirstNameLength)]
-        [MinLength(MinFirstNameLength)]
         public string FirstName { get; set; } = null!;
 
         [Required]
         [MaxLength(MaxLastNameLength)]
-        [MinLength(MinLastNameLength)]
         public string LastName { get; set; } = null!;
-
+        [MaxLength(MaxImgUrlLength)]
         public string ProfilePictureUrl { get; set; }
         [Required]
         public bool isDeleted { get; set; } = false;

@@ -31,7 +31,6 @@ namespace STAREvents.Data.Models
 
         [Required]
         [MaxLength(MaxContentLength)]
-        [MinLength(MinContentLength)]
         public string Content { get; set; } = null!;
 
         [Required]

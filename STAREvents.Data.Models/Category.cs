@@ -20,7 +20,6 @@ namespace STAREvents.Data.Models
 
         [Required]
         [MaxLength(MaxNameLength)]
-        [MinLength(MinNameLength)]
         public string Name { get; set; } = null!;
 
         public ICollection<EventCategory> EventCategories { get; set; }

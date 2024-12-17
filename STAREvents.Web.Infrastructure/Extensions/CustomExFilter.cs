@@ -21,22 +21,17 @@ namespace STAREvents.Web.Infrastructure.Extensions
         {
             if (context.ExceptionHandled || !context.HttpContext.Response.HasStarted)
             {
-                // Generate a unique exception code
                 var exceptionCode = Guid.NewGuid().ToString();
 
-                // Log the exception with the exception code
                 _logger.LogError(context.Exception, "An unhandled exception occurred. Exception Code: {ExceptionCode}", exceptionCode);
 
-                // Set the response status code
                 context.HttpContext.Response.StatusCode = 500;
 
-                // Set the view result
                 var result = new ViewResult
                 {
                     ViewName = "~/Views/Error/Error500.cshtml"
                 };
 
-                // Pass the exception code to the view
                 result.ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
                 {
                     { "ExceptionCode", exceptionCode }

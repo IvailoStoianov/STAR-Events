@@ -23,18 +23,15 @@ namespace STAREvents.Data.Models
 
         [Required]
         [MaxLength(MaxNameLength)]
-        [MinLength(MinNameLength)]
         public string Name { get; set; } = null!;
 
         [Required]
         [MaxLength(MaxDescriptionLength)]
-        [MinLength(MinDescriptionLength)]
         public string Description { get; set; } = null!;
         [Required]
         public string ImageUrl { get; set; } = null!;
         [Required]
         [MaxLength(AddressMaxLength)]
-        [MinLength(AddressMinLength)]
         public string Address { get; set; } = null!;
         [Required]
         public DateTime CreatedOnDate { get; set; }

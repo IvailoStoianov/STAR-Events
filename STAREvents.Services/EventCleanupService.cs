@@ -3,11 +3,7 @@ using Microsoft.Extensions.Hosting;
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static STAREvents.Common.EntityValidationConstants.CleanUpConstants;
 
 namespace STAREvents.Services.Data
 {
@@ -25,7 +21,7 @@ namespace STAREvents.Services.Data
             while (!stoppingToken.IsCancellationRequested)
             {
                 await CheckAndDeleteExpiredEventsAsync();
-                await Task.Delay(TimeSpan.FromHours(1), stoppingToken); 
+                await Task.Delay(TimeSpan.FromMinutes(CleanupIntervalInMins), stoppingToken); 
             }
         }
 

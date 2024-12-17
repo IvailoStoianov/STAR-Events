@@ -1,236 +1,344 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using STAREvents.Data.Models;
-using STAREvents.Data.Repository;
+using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Web.Data;
 using STAREvents.Web.ViewModels.Profile;
 using static STAREvents.Common.ErrorMessagesConstants.ProfileServiceErrorMessages;
+using static STAREvents.Common.ModelErrorsConstants.Password;
+
 
 namespace STAREvents.Services.Tests
 {
     [TestFixture]
     public class ProfileServiceTests
     {
-        private STAREventsDbContext _context;
-        private ProfileService _profileService;
+        private Mock<IRepository<Event, object>> _eventRepositoryMock;
+        private Mock<IRepository<Comment, object>> _commentRepositoryMock;
         private Mock<IUserAuthService> _userAuthServiceMock;
-        private Mock<IWebHostEnvironment> _mockWebHostEnvironment;
         private Mock<IFileStorageService> _fileStorageServiceMock;
         private Mock<IConfiguration> _configurationMock;
-
-        private IList<ApplicationUser> usersData = new List<ApplicationUser>
-        {
-            new ApplicationUser
-            {
-                Id = Guid.NewGuid(),
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "john.doe@example.com",
-                UserName = "johndoe",
-                isDeleted = false,
-                SecurityStamp = Guid.NewGuid().ToString()
-            },
-            new ApplicationUser
-            {
-                Id = Guid.NewGuid(),
-                FirstName = "Jane",
-                LastName = "Doe",
-                Email = "jane.doe@example.com",
-                UserName = "janedoe",
-                isDeleted = false,
-                SecurityStamp = Guid.NewGuid().ToString()
-            }
-        };
+        private ProfileService _profileService;
+        private Guid _validUserId;
+        private ApplicationUser _validUser;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
-            var options = new DbContextOptionsBuilder<STAREventsDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options;
-
-            _context = new STAREventsDbContext(options);
-
-            _context.Users.AddRange(usersData);
-            _context.SaveChanges();
-
+            _eventRepositoryMock = new Mock<IRepository<Event, object>>();
+            _commentRepositoryMock = new Mock<IRepository<Comment, object>>();
             _userAuthServiceMock = new Mock<IUserAuthService>();
-            _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
             _fileStorageServiceMock = new Mock<IFileStorageService>();
             _configurationMock = new Mock<IConfiguration>();
 
             var sectionMock = new Mock<IConfigurationSection>();
-            sectionMock.Setup(s => s.Value).Returns("false"); // Default to local saving
+            sectionMock.Setup(s => s.Value).Returns("false"); 
             _configurationMock.Setup(c => c.GetSection("UseAzureBlobStorage")).Returns(sectionMock.Object);
 
+            _validUserId = Guid.NewGuid();
+            _validUser = new ApplicationUser
+            {
+                Id = _validUserId,
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john.doe@example.com",
+                UserName = "johndoe",
+                ProfilePictureUrl = "/images/default.jpg",
+                isDeleted = false
+            };
+
+            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(_validUserId.ToString()))
+                .ReturnsAsync(_validUser);
+
             _profileService = new ProfileService(
-                _mockWebHostEnvironment.Object,
-                new BaseRepository<Event, object>(_context),
-                new BaseRepository<Comment, object>(_context),
+                _eventRepositoryMock.Object,
+                _commentRepositoryMock.Object,
                 _userAuthServiceMock.Object,
                 _fileStorageServiceMock.Object,
                 _configurationMock.Object
             );
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
-        }
 
         [Test]
-        public async Task GetUserByIdAsync_ShouldReturnUser_WhenUserExists()
+        public async Task GetUserByIdAsync_ReturnsSuccess_WhenUserExists()
         {
-            var userId = usersData[0].Id;
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString())).ReturnsAsync(usersData[0]);
+            var result = await _profileService.GetUserByIdAsync(_validUserId);
 
-            var result = await _profileService.GetUserByIdAsync(userId);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Id, Is.EqualTo(userId));
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Data, Is.EqualTo(_validUser));
         }
-
         [Test]
-        public void GetUserByIdAsync_ShouldThrowKeyNotFoundException_WhenUserDoesNotExist()
+        public async Task GetUserByIdAsync_ReturnsFailure_WhenUserDoesNotExist()
         {
-            var userId = Guid.NewGuid();
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString())).ReturnsAsync((ApplicationUser)null);
+            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
 
-            var ex = Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-                await _profileService.GetUserByIdAsync(userId)
-            );
+            var result = await _profileService.GetUserByIdAsync(Guid.NewGuid());
 
-            Assert.That(ex.Message, Is.EqualTo(UserNotFound));
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(UserNotFound));
         }
-
         [Test]
-        public async Task UpdateProfileAsync_WithValidModel_UsesLocalSaving()
+        public async Task UpdateProfileAsync_ReturnsSuccess_WhenValidDataProvided()
         {
-            _profileService = new ProfileService(
-                _mockWebHostEnvironment.Object,
-                new BaseRepository<Event, object>(_context),
-                new BaseRepository<Comment, object>(_context),
-                _userAuthServiceMock.Object,
-                _fileStorageServiceMock.Object,
-                new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-                {
-            { "UseAzureBlobStorage", "false" }
-                }).Build()
-            );
-
-            var userId = usersData[0].Id;
-
-            var profileInputModel = new ProfileInputModel
+            var model = new ProfileInputModel
             {
-                FirstName = "Smith",
-                LastName = "James",
-                Email = "Something123@gmail.com",
-                Username = "johndoe",
-                ProfilePicture = Mock.Of<IFormFile>(x => x.FileName == "test.jpg" && x.Length == 1024),
-                ProfilePictureUrl = "/images/default-pfp.svg"
+                FirstName = "Jane",
+                LastName = "Smith",
+                Email = "jane.smith@example.com",
+                Username = "janesmith",
+                ProfilePicture = null
             };
 
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString())).ReturnsAsync(usersData[0]);
-            _userAuthServiceMock.Setup(ua => ua.UpdateUserAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Success);
 
-            _fileStorageServiceMock.Setup(fs => fs.UploadFileLocallyAsync(It.IsAny<IFormFile>(), "images/profile-pictures"))
-                .ReturnsAsync("/images/profile-pictures/test.jpg");
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
 
-            await _profileService.UpdateProfileAsync(userId, profileInputModel);
-
-            _fileStorageServiceMock.Verify(fs => fs.UploadFileLocallyAsync(It.IsAny<IFormFile>(), "images/profile-pictures"), Times.Once);
-
-            var updatedUser = await _context.Users.FindAsync(userId);
-
-            Assert.That(updatedUser?.FirstName, Is.EqualTo("Smith"));
-            Assert.That(updatedUser?.LastName, Is.EqualTo("James"));
-            Assert.That(updatedUser?.ProfilePictureUrl, Is.EqualTo("/images/profile-pictures/test.jpg"));
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(_validUser.FirstName, Is.EqualTo("Jane"));
+            Assert.That(_validUser.Email, Is.EqualTo("jane.smith@example.com"));
         }
-
         [Test]
-        public async Task UpdateProfileAsync_WithValidModel_UsesAzureBlobStorage()
+        public async Task UpdateProfileAsync_ReturnsFailure_WhenInvalidEmailProvided()
         {
-            _profileService = new ProfileService(
-                _mockWebHostEnvironment.Object,
-                new BaseRepository<Event, object>(_context),
-                new BaseRepository<Comment, object>(_context),
-                _userAuthServiceMock.Object,
-                _fileStorageServiceMock.Object,
-                new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-                {
-            { "UseAzureBlobStorage", "true" }
-                }).Build()
-            );
-
-            var userId = usersData[0].Id;
-
-            var profileInputModel = new ProfileInputModel
+            var model = new ProfileInputModel
             {
-                FirstName = "Smith",
-                LastName = "James",
-                Email = "Something123@gmail.com",
-                Username = "johndoe",
-                ProfilePicture = Mock.Of<IFormFile>(x => x.FileName == "test.jpg" && x.Length == 1024),
-                ProfilePictureUrl = "/images/default-pfp.svg"
+                FirstName = "Jane",
+                LastName = "Smith",
+                Email = "invalid-email",
+                Username = "janesmith"
             };
 
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString())).ReturnsAsync(usersData[0]);
-            _userAuthServiceMock.Setup(ua => ua.UpdateUserAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
 
-            _fileStorageServiceMock.Setup(fs => fs.UploadFileAsync(It.IsAny<IFormFile>(), "profile-pictures"))
-                .ReturnsAsync("https://storageaccount.blob.core.windows.net/profile-pictures/test.jpg");
-
-            await _profileService.UpdateProfileAsync(userId, profileInputModel);
-
-            _fileStorageServiceMock.Verify(fs => fs.UploadFileAsync(It.IsAny<IFormFile>(), "profile-pictures"), Times.Once);
-
-            var updatedUser = await _context.Users.FindAsync(userId);
-
-            Assert.That(updatedUser?.FirstName, Is.EqualTo("Smith"));
-            Assert.That(updatedUser?.LastName, Is.EqualTo("James"));
-            Assert.That(updatedUser?.ProfilePictureUrl, Is.EqualTo("https://storageaccount.blob.core.windows.net/profile-pictures/test.jpg"));
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(InvalidEmail));
         }
+        [Test]
+        public async Task SoftDeleteProfileAsync_ReturnsSuccess_WhenUserDeleted()
+        {
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _userAuthServiceMock.Setup(u => u.LogoutAsync()).Returns(Task.CompletedTask);
 
+            var result = await _profileService.SoftDeleteProfileAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(_validUser.isDeleted, Is.True);
+        }
+        [Test]
+        public async Task SoftDeleteProfileAsync_ReturnsFailure_WhenUpdateFails()
+        {
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Update failed" }));
+
+            var result = await _profileService.SoftDeleteProfileAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(FaildSoftDeleteUser));
+        }
+        [Test]
+        public async Task ChangePasswordAsync_ReturnsSuccess_WhenPasswordChanged()
+        {
+            var model = new ChangePasswordViewModel
+            {
+                CurrentPassword = "OldPass123!",
+                NewPassword = "NewPass123!",
+                ConfirmPassword = "NewPass123!"
+            };
+
+            _userAuthServiceMock.Setup(u => u.ChangePasswordAsync(
+                _validUserId.ToString(), model.CurrentPassword, model.NewPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var result = await _profileService.ChangePasswordAsync(_validUserId, model);
+
+            Assert.That(result.Succeeded, Is.True);
+        }
+        [Test]
+        public async Task ChangePasswordAsync_ReturnsFailure_WhenPasswordsDoNotMatch()
+        {
+            var model = new ChangePasswordViewModel
+            {
+                CurrentPassword = "OldPass123!",
+                NewPassword = "NewPass123!",
+                ConfirmPassword = "MismatchPass123!"
+            };
+
+            var result = await _profileService.ChangePasswordAsync(_validUserId, model);
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(PasswordsDontMatch));
+        }
+        [Test]
+        public async Task UpdateProfileAsync_ReturnsFailure_WhenRequiredFieldsAreEmpty()
+        {
+            var model = new ProfileInputModel
+            {
+                FirstName = "",
+                LastName = "",
+                Email = "",
+                Username = ""
+            };
+
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(AllFieldsAreRequired));
+        }
 
         [Test]
-        public async Task SoftDeleteProfileAsync_ShouldCallRepositoryDelete_WhenUserExists()
+        public async Task UpdateProfileAsync_ReturnsFailure_WhenProfilePictureInvalidFormat()
         {
-            var userId = usersData[0].Id;
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString())).ReturnsAsync(usersData[0]);
-            _userAuthServiceMock.Setup(ua => ua.UpdateUserAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
-            _userAuthServiceMock.Setup(ua => ua.LogoutAsync()).Returns(Task.CompletedTask);
+            var model = new ProfileInputModel
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john.doe@example.com",
+                Username = "johndoe",
+                ProfilePicture = Mock.Of<IFormFile>(f => f.FileName == "invalid.exe")
+            };
 
-            await _profileService.SoftDeleteProfileAsync(userId);
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
 
-            var deletedUser = await _context.Users.FindAsync(userId);
-            Assert.That(deletedUser?.isDeleted, Is.True);
-            _userAuthServiceMock.Verify(ua => ua.LogoutAsync(), Times.Once);
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(InvalidImageFormat));
         }
 
         [Test]
-        public async Task LoadProfileAsync_ShouldReturnProfileView_WhenUserExists()
+        public async Task UpdateProfileAsync_ReturnsSuccess_WhenProfilePictureUploadedLocally()
         {
-            var userId = usersData[0].Id;
+            var model = new ProfileInputModel
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john.doe@example.com",
+                Username = "johndoe",
+                ProfilePicture = Mock.Of<IFormFile>(f => f.FileName == "profile.jpg")
+            };
 
-            usersData[0].ProfilePictureUrl = "/images/default-pfp.jpg";
+            _fileStorageServiceMock.Setup(f => f.UploadFileLocallyAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+                .ReturnsAsync("/images/profile-pictures/profile.jpg");
 
-            _userAuthServiceMock.Setup(ua => ua.GetUserByIdAsync(userId.ToString()))
-                .ReturnsAsync(usersData[0]);
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Success);
 
-            var result = await _profileService.LoadProfileAsync(userId);
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.FirstName, Is.EqualTo("John"));
-            Assert.That(result.ProfilePictureUrl, Is.EqualTo("/images/default-pfp.jpg"));
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(_validUser.ProfilePictureUrl, Is.EqualTo("/images/profile-pictures/profile.jpg"));
         }
+
+        [Test]
+        public async Task UpdateProfileAsync_ReturnsSuccess_WhenProfilePictureUploadedToAzure()
+        {
+            var model = new ProfileInputModel
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john.doe@example.com",
+                Username = "johndoe",
+                ProfilePicture = Mock.Of<IFormFile>(f => f.FileName == "profile.jpg")
+            };
+
+            var sectionMock = new Mock<IConfigurationSection>();
+            sectionMock.Setup(s => s.Value).Returns("true");
+            _configurationMock.Setup(c => c.GetSection("UseAzureBlobStorage")).Returns(sectionMock.Object);
+
+            _fileStorageServiceMock.Setup(f => f.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+                .ReturnsAsync("https://storageaccount.blob.core.windows.net/profile-pictures/profile.jpg");
+
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var result = await _profileService.UpdateProfileAsync(_validUserId, model);
+
+            Assert.That(result.Succeeded, Is.True);
+        }
+
+        [Test]
+        public async Task SoftDeleteProfileAsync_DeletesEventsAndComments()
+        {
+            var events = new List<Event>
+                {
+                    new Event { EventId = Guid.NewGuid(), OrganizerID = _validUserId, isDeleted = false }
+                };
+
+                        var comments = new List<Comment>
+                {
+                    new Comment { CommentId = Guid.NewGuid(), UserId = _validUserId, isDeleted = false }
+                };
+
+            _eventRepositoryMock.Setup(e => e.GetAllAsync()).ReturnsAsync(events);
+            _commentRepositoryMock.Setup(c => c.GetAllAsync()).ReturnsAsync(comments);
+            _userAuthServiceMock.Setup(u => u.UpdateUserAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _userAuthServiceMock.Setup(u => u.LogoutAsync()).Returns(Task.CompletedTask);
+
+            var result = await _profileService.SoftDeleteProfileAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(events[0].isDeleted, Is.True);
+            Assert.That(comments[0].isDeleted, Is.True);
+            _eventRepositoryMock.Verify(e => e.UpdateAsync(events[0]), Times.Once);
+            _commentRepositoryMock.Verify(c => c.UpdateAsync(comments[0]), Times.Once);
+        }
+        [Test]
+        public async Task LoadEditFormAsync_ReturnsFailure_WhenUserNotFound()
+        {
+            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((ApplicationUser)null);
+
+            var result = await _profileService.LoadEditFormAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(UserNotFound));
+        }
+
+        [Test]
+        public async Task LoadProfileAsync_ReturnsFailure_WhenUserNotFound()
+        {
+            _userAuthServiceMock.Setup(u => u.GetUserByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((ApplicationUser)null);
+
+            var result = await _profileService.LoadProfileAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors, Contains.Item(UserNotFound));
+        }
+
+        [Test]
+        public async Task LoadEditFormAsync_ReturnsCorrectModel_WhenUserExists()
+        {
+            var result = await _profileService.LoadEditFormAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.True);
+            var data = result.Data;
+            Assert.That(data.FirstName, Is.EqualTo(_validUser.FirstName));
+            Assert.That(data.LastName, Is.EqualTo(_validUser.LastName));
+            Assert.That(data.Email, Is.EqualTo(_validUser.Email));
+            Assert.That(data.Username, Is.EqualTo(_validUser.UserName));
+            Assert.That(data.ProfilePictureUrl, Is.EqualTo(_validUser.ProfilePictureUrl));
+        }
+
+        [Test]
+        public async Task LoadProfileAsync_ReturnsCorrectModel_WhenUserExists()
+        {
+            var result = await _profileService.LoadProfileAsync(_validUserId);
+
+            Assert.That(result.Succeeded, Is.True);
+            var data = result.Data;
+            Assert.That(data.FirstName, Is.EqualTo(_validUser.FirstName));
+            Assert.That(data.LastName, Is.EqualTo(_validUser.LastName));
+            Assert.That(data.Email, Is.EqualTo(_validUser.Email));
+            Assert.That(data.Username, Is.EqualTo(_validUser.UserName));
+            Assert.That(data.ProfilePictureUrl, Is.EqualTo(_validUser.ProfilePictureUrl));
+        }
+
 
     }
 }

@@ -2,12 +2,13 @@
 using STAREvents.Data.Models;
 using STAREvents.Data.Repository.Interfaces;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Services.Data.Interfaces.STAREvents.Web.Services;
 using STAREvents.Web.ViewModels.Admin;
 using STAREvents.Web.ViewModels.Events;
 using STAREvents.Web.ViewModels.Profile;
+using STAREvents.Common;
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
 using static STAREvents.Common.ErrorMessagesConstants.EventsServiceErrorMessages;
+using static STAREvents.Common.ErrorMessagesConstants.AdminServiceErrorMessages;
 
 namespace STAREvents.Services.Data
 {
@@ -22,32 +23,48 @@ namespace STAREvents.Services.Data
             this.userAuthService = userAuthService;
         }
 
-        public async Task<AdminDashboardViewModel> GetAdminDashboardViewModelAsync()
+        public async Task<ServiceResult<AdminDashboardViewModel>> GetAdminDashboardViewModelAsync()
         {
-            return new AdminDashboardViewModel
+            var eventsResult = await GetAllEventsAsync();
+            var usersResult = await GetAllUsersAsync();
+
+            if (!eventsResult.Succeeded || !usersResult.Succeeded)
             {
-                Events = await GetAllEventsAsync(),
-                Users = await GetAllUsersAsync(),
-                TotalEvents = await GetTotalEventsAsync(),
-                UpcomingEvents = await GetUpcomingEventsCountAsync(),
-                PastEvents = await GetPastEventsCountAsync(),
-                TotalUsers = await GetTotalUsersAsync()
+                return ServiceResult<AdminDashboardViewModel>.Failure(FailedToLoadDashboardData);
+            }
+
+            var events = eventsResult.Data;
+            var users = usersResult.Data;
+
+            var dashboardViewModel = new AdminDashboardViewModel
+            {
+                Events = events,
+                Users = users,
+                TotalEvents = events.Count,
+                UpcomingEvents = events.Count(e => e.StartDate > DateTime.Now),
+                PastEvents = events.Count(e => e.EndDate < DateTime.Now),
+                TotalUsers = users.Count
             };
+
+            return ServiceResult<AdminDashboardViewModel>.Success(dashboardViewModel);
         }
 
-        public async Task<List<EventViewModel>> GetAllEventsAsync()
+        public async Task<ServiceResult<List<EventViewModel>>> GetAllEventsAsync()
         {
             var events = await eventRepository.GetAllAttached().Include(e => e.Organizer).ToListAsync();
-            return events.Select(e => new EventViewModel
+
+            var result = events.Select(e => new EventViewModel
             {
                 EventId = e.EventId,
                 Name = e.Name,
                 Organizer = e.Organizer,
                 isDeleted = e.isDeleted
             }).ToList();
+
+            return ServiceResult<List<EventViewModel>>.Success(result);
         }
 
-        public async Task<List<ProfileViewModel>> GetAllUsersAsync()
+        public async Task<ServiceResult<List<ProfileViewModel>>> GetAllUsersAsync()
         {
             var users = await userAuthService.GetAllUsersAsync();
 
@@ -55,129 +72,120 @@ namespace STAREvents.Services.Data
 
             foreach (var user in users)
             {
+                var isAdmin = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), Administrator);
                 userViewModels.Add(new ProfileViewModel
                 {
                     UserId = user.Id.ToString(),
                     Username = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
                     IsDeleted = user.isDeleted,
-                    IsAdmin = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), Administrator)
+                    IsAdmin = isAdmin
                 });
             }
 
-            return userViewModels;
+            return ServiceResult<List<ProfileViewModel>>.Success(userViewModels);
         }
 
-        public async Task<int> GetTotalEventsAsync()
+        public async Task<ServiceResult> SoftDeleteEventAsync(Guid eventId)
         {
-            var events = await eventRepository.GetAllAsync();
-            return events.Count();
+            var eventItem = await eventRepository.GetByIdAsync(eventId);
+            if (eventItem == null)
+                return ServiceResult.Failure(EventNotFound);
+
+            eventItem.isDeleted = true;
+            await eventRepository.UpdateAsync(eventItem);
+
+            return ServiceResult.Success();
         }
 
-        public async Task<int> GetUpcomingEventsCountAsync()
-        {
-            var events = await eventRepository.GetAllAsync();
-            return events.Count(e => e.StartDate > DateTime.Now);
-        }
-
-        public async Task<int> GetPastEventsCountAsync()
-        {
-            var events = await eventRepository.GetAllAsync();
-            return events.Count(e => e.EndDate < DateTime.Now);
-        }
-
-        public async Task<int> GetTotalUsersAsync()
-        {
-            var users = await userAuthService.GetAllUsersAsync();
-            return users.Count;
-        }
-
-        public async Task RecoverEventAsync(Guid id)
+        public async Task<ServiceResult> RecoverEventAsync(Guid id)
         {
             var eventItem = await eventRepository.GetByIdAsync(id);
-            if (eventItem != null)
-            {
-                eventItem.isDeleted = false;
-                await eventRepository.UpdateAsync(eventItem);
-            }
+            if (eventItem == null)
+                return ServiceResult.Failure(EventNotFound);
+
+            eventItem.isDeleted = false;
+            await eventRepository.UpdateAsync(eventItem);
+
+            return ServiceResult.Success();
         }
 
-        public async Task SoftDeleteEventAsync(Guid eventId)
-        {
-            var eventItem = await eventRepository.GetByIdAsync(eventId);
-            if (eventItem != null)
-            {
-                eventItem.isDeleted = true;
-                await eventRepository.UpdateAsync(eventItem);
-            }
-        }
-
-        public async Task SoftDeleteUserAsync(Guid userId)
+        public async Task<ServiceResult> SoftDeleteUserAsync(Guid userId)
         {
             var user = await userAuthService.GetUserByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                user.isDeleted = true;
-                await userAuthService.UpdateUserAsync(user);
-            }
+            if (user == null)
+                return ServiceResult.Failure(UserNotFound);
+
+            user.isDeleted = true;
+            await userAuthService.UpdateUserAsync(user);
+
+            return ServiceResult.Success();
         }
 
-        public async Task<List<CommentViewModel>> GetEventCommentsAsync(Guid eventId)
+        public async Task<ServiceResult> RecoverUserAsync(Guid userId)
+        {
+            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
+            if (user == null)
+                return ServiceResult.Failure(UserNotFound);
+
+            user.isDeleted = false;
+            await userAuthService.UpdateUserAsync(user);
+
+            return ServiceResult.Success();
+        }
+
+        public async Task<ServiceResult<List<CommentViewModel>>> GetEventCommentsAsync(Guid eventId)
         {
             var eventItem = await eventRepository.GetByIdAsync(eventId);
-            if (eventItem != null)
+            if (eventItem == null)
+                return ServiceResult<List<CommentViewModel>>.Failure(EventNotFound);
+
+            var comments = eventItem.EventComments.Select(c => new CommentViewModel
             {
-                return eventItem.EventComments.Select(c => new CommentViewModel
-                {
-                    CommentId = c.CommentId,
-                    Content = c.Content,
-                    User = c.User
-                }).ToList();
-            }
-            return new List<CommentViewModel>();
+                CommentId = c.CommentId,
+                Content = c.Content,
+                User = c.User
+            }).ToList();
+
+            return ServiceResult<List<CommentViewModel>>.Success(comments);
         }
 
-        public async Task SoftDeleteCommentAsync(Guid commentId, string userName)
+        public async Task<ServiceResult> SoftDeleteCommentAsync(Guid commentId, string userName)
         {
             var user = await userAuthService.GetUserByNameAsync(userName);
             if (user == null)
-            {
-                throw new KeyNotFoundException(UserNotFound);
-            }
+                return ServiceResult.Failure(UserNotFound);
 
-            var eventWithComment = await eventRepository.GetAllAttached().Include(e => e.EventComments)
+            var eventWithComment = await eventRepository.GetAllAttached()
+                .Include(e => e.EventComments)
                 .FirstOrDefaultAsync(e => e.EventComments.Any(c => c.CommentId == commentId));
+
+            if (eventWithComment == null)
+                return ServiceResult.Failure(EventNotFound);
+
+            var comment = eventWithComment.EventComments.FirstOrDefault(c => c.CommentId == commentId);
             var isAdmin = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), Administrator);
 
-            if (eventWithComment != null)
+            if (comment != null && (comment.UserId == user.Id || eventWithComment.OrganizerID == user.Id || isAdmin))
             {
-                var comment = eventWithComment.EventComments.FirstOrDefault(c => c.CommentId == commentId);
-                if (comment != null && (comment.UserId == user.Id || eventWithComment.OrganizerID == user.Id || isAdmin))
-                {
-                    comment.isDeleted = true;
-                    await eventRepository.UpdateAsync(eventWithComment);
-                }
+                comment.isDeleted = true;
+                await eventRepository.UpdateAsync(eventWithComment);
+                return ServiceResult.Success();
             }
+
+            return ServiceResult.Failure(NotAllowedToDeleteComment);
         }
 
-        public async Task RecoverUserAsync(Guid userId)
-        {
-            var user = await userAuthService.GetUserByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                user.isDeleted = false;
-                await userAuthService.UpdateUserAsync(user);
-            }
-        }
-
-        public async Task RemoveAdminRole(Guid userId)
-        {
-            await userAuthService.RemoveRoleFromUserAsync(userId.ToString(), Administrator);
-        }
-
-        public async Task AddAdminRole(Guid userId)
+        public async Task<ServiceResult> AddAdminRole(Guid userId)
         {
             await userAuthService.AddRoleToUserAsync(userId.ToString(), Administrator);
+            return ServiceResult.Success();
+        }
+
+        public async Task<ServiceResult> RemoveAdminRole(Guid userId)
+        {
+            await userAuthService.RemoveRoleFromUserAsync(userId.ToString(), Administrator);
+            return ServiceResult.Success();
         }
     }
 }

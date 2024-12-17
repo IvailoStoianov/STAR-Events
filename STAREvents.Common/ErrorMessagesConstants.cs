@@ -43,12 +43,6 @@ namespace STAREvents.Common
             public const string IncorrectCurrentPasswordError = "The current password is incorrect.";
             public const string UpdateProfileError = "An error occurred while updating the profile.";
         }
-        public static class CreateEventsServiceErrorMessages
-        {
-            public const string ImageRequired = "Image is required.";
-            public const string ImageSizeExceeded = "File size exceeds {0} MB.";
-            public const string EventCreationError = "An error occurred while creating the event.";
-        }
         public static class CreateEventInputModelErrorMessages
         {
             public const string EventNameRequired = "Event name is required.";
@@ -68,6 +62,13 @@ namespace STAREvents.Common
         {
             public const string EventNotFound = "Event not found.";
             public const string UserNotFound = "User not found.";
+            public const string ImageRequired = "Image is required.";
+            public const string ImageSizeExceeded = "File size exceeds {0} MB.";
+            public const string EventCreationError = "An error occurred while creating the event.";
+            public const string CommentNotFound = "Comment not found.";
+            public const string UnauthorizedCommentDeletion = "You are not authorized to delete this comment.";
+            public const string UserNotJoinedEvent = "User has not joined the event.";
+            public const string EventFull = "Event is already full.";
         }
         public static class ImageRelatedErrorMessages
         {
@@ -90,6 +91,31 @@ namespace STAREvents.Common
             public const string FailedToSoftDeleteUser = "Failed to soft delete user.";
             public const string AllFieldsAreRequired = "All fields are required.";
             public const string InvalidEmail = "Invalid email address.";
+        }
+        public static class AdminServiceErrorMessages
+        {
+            public const string FailedToLoadDashboardData = "Failed to load dashboard data.";
+            public const string NotAllowedToDeleteComment = "You are not authorized to delete this comment.";
+        }
+        public static class AdminControllerErrorMessages
+        {
+            public const string FailedToLoadDashboardData = "Failed to load dashboard data.";
+            public const string FailedToDeleteEvent = "Failed to delete event.";
+            public const string FailedToRecoverEvent = "Failed to recover event.";
+            public const string FailedToDeleteUser = "Failed to delete user.";
+            public const string FailedToRecoverUser = "Failed to recover user.";
+            public const string FailedToGrantAdminRole = "Failed to grant admin role.";
+            public const string FailedToRemoveAdminRole = "Failed to remove admin role.";
+        }
+        public static class NotificationsServiceErrorMessages
+        {
+            public const string NotificationNotFound = "Notification not found.";
+            public const string NotificationAlreadyMarked = "Notification is already marked as read.";
+        }
+        public static class NotifcationsControllerErrorMessages
+        {
+            public const string FailedToLoadNotifications = "Failed to load notifications.";
+            public const string FailedToMarkNotifcationAsRead = "Failed to mark notification as read.";
         }
     }
 }

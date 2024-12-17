@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using STAREvents.Services.Data.Interfaces;
-using STAREvents.Web.Models;
 using STAREvents.Web.ViewModels.Profile;
 using System.Security.Claims;
-using static STAREvents.Common.ErrorMessagesConstants.ProfileControllerErrorMessages;
+using static STAREvents.Common.SuccessMessage.Profile;
 
 namespace STAREvents.Web.Controllers
 {
@@ -28,9 +26,16 @@ namespace STAREvents.Web.Controllers
                 return Unauthorized();
             }
 
-            Guid userId = new Guid(userIdValue);
-            ProfileViewModel model = await profileService.LoadProfileAsync(userId);
-            return View(model);
+            var userId = Guid.Parse(userIdValue);
+            var result = await profileService.LoadProfileAsync(userId);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(result.Data);
         }
 
         [HttpGet]
@@ -42,9 +47,16 @@ namespace STAREvents.Web.Controllers
                 return Unauthorized();
             }
 
-            Guid userId = new Guid(userIdValue);
-            ProfileInputModel model = await profileService.LoadEditFormAsync(userId);
-            return View(model);
+            var userId = Guid.Parse(userIdValue);
+            var result = await profileService.LoadEditFormAsync(userId);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(result.Data);
         }
 
         [HttpPost]
@@ -61,8 +73,16 @@ namespace STAREvents.Web.Controllers
                 return Unauthorized();
             }
 
-            Guid userId = new Guid(userIdValue);
-            await profileService.UpdateProfileAsync(userId, model);
+            var userId = Guid.Parse(userIdValue);
+            var result = await profileService.UpdateProfileAsync(userId, model);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = ProfileUpdated;
             return RedirectToAction(nameof(Index));
         }
 
@@ -86,20 +106,22 @@ namespace STAREvents.Web.Controllers
                 return Unauthorized();
             }
 
-            var userId = new Guid(userIdValue);
+            var userId = Guid.Parse(userIdValue);
             var result = await profileService.ChangePasswordAsync(userId, model);
-            if (result.Succeeded)
+
+            if (!result.Succeeded)
             {
-                return RedirectToAction(nameof(Index));
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+                return View(model);
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("CurrentPassword", error.Description);
-            }
-
-            return View(model);
+            TempData["SuccessMessage"] = PasswordChanged;
+            return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteProfile()
         {
@@ -109,19 +131,17 @@ namespace STAREvents.Web.Controllers
                 return Unauthorized();
             }
 
-            Guid userId = new Guid(userIdValue);
-            var user = await profileService.GetUserByIdAsync(userId);
-            if (user == null)
+            var userId = Guid.Parse(userIdValue);
+            var result = await profileService.SoftDeleteProfileAsync(userId);
+
+            if (!result.Succeeded)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = result.Errors.FirstOrDefault();
+                return RedirectToAction(nameof(Index));
             }
-            await profileService.SoftDeleteProfileAsync(userId);
+
+            TempData["SuccessMessage"] = ProfileDeleted;
             return RedirectToAction("Index", "Home");
         }
     }
 }
-
-
-
-
-

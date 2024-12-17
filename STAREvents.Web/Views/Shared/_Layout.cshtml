@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="~/images/logo-main.svg" sizes="32x32">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/STAREvents.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navigation.css" asp-append-version="true" />
@@ -33,10 +33,13 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="MyEvents" asp-action="All">My Events</a>
+                                <a class="nav-link" asp-area="" asp-controller="Events" asp-action="MyEvents">My Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="CreateEvents" asp-action="Create">Create</a>
+                                <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Create">Create</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Notifications" asp-action="MyNotifications">Notifications</a>
                             </li>
                         }
                         @if (User.IsInRole("Admin"))
@@ -71,5 +74,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-

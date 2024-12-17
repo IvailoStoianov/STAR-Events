@@ -41,6 +41,7 @@ namespace STAREvents.Web
             {
                 options.Filters.Add<CustomExFilter>(); 
             });
+
             builder.Services.AddRazorPages();
 
             builder.Services.Configure<FormOptions>(options =>
@@ -53,7 +54,7 @@ namespace STAREvents.Web
             builder.Services.RegisterUserDefinedServices(typeof(IBaseService).Assembly);
 
             builder.Services.AddHostedService<EventCleanupService>();
-
+            builder.Services.AddHostedService<NotificationBackgroundService>();
 
             var app = builder.Build();
 

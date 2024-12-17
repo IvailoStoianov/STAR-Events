@@ -9,6 +9,8 @@
 }
 
 <div class="container profile-container mt-5 pb-2">
+    @await Html.PartialAsync("_TempDataSuccessMessage")
+    @await Html.PartialAsync("_TempDataErrorMessage")
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card profile-card">

@@ -1,8 +1,14 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Storage;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using STAREvents.Services.Data;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace STAREvents.Services.Tests
 {
@@ -19,14 +25,13 @@ namespace STAREvents.Services.Tests
         public void SetUp()
         {
             _configurationMock = new Mock<IConfiguration>();
+            _blobServiceClientMock = new Mock<BlobServiceClient>();
+            _blobContainerClientMock = new Mock<BlobContainerClient>();
+            _blobClientMock = new Mock<BlobClient>();
 
             var azureBlobSectionMock = new Mock<IConfigurationSection>();
             azureBlobSectionMock.Setup(s => s["ConnectionString"]).Returns("UseDevelopmentStorage=true;");
             _configurationMock.Setup(c => c.GetSection("AzureBlobStorage")).Returns(azureBlobSectionMock.Object);
-
-            _blobServiceClientMock = new Mock<BlobServiceClient>();
-            _blobContainerClientMock = new Mock<BlobContainerClient>();
-            _blobClientMock = new Mock<BlobClient>();
 
             _blobServiceClientMock.Setup(bs => bs.GetBlobContainerClient(It.IsAny<string>()))
                 .Returns(_blobContainerClientMock.Object);
@@ -37,6 +42,8 @@ namespace STAREvents.Services.Tests
             _fileStorageService = new FileStorageService(_configurationMock.Object);
         }
 
+
+        
         [Test]
         public async Task UploadFileLocallyAsync_ShouldSaveFileToLocalFolder()
         {

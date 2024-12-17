@@ -7,6 +7,7 @@ using STAREvents.Data.Models;
 using STAREvents.Services.Data;
 
 using static STAREvents.Common.EntityValidationConstants.RoleNames;
+using static STAREvents.Common.ErrorMessagesConstants.UserAuthServiceMessages;
 
 namespace STAREvents.Services.Tests
 {
@@ -171,6 +172,121 @@ namespace STAREvents.Services.Tests
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.UserName, Is.EqualTo("testuser"));
+        }
+        [Test]
+        public async Task UpdateUserAsync_ReturnsSuccess_WhenUserUpdated()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "testuser" };
+
+            userManagerMock.Setup(x => x.UpdateAsync(user)).ReturnsAsync(IdentityResult.Success);
+
+            var result = await userAuthService.UpdateUserAsync(user);
+
+            Assert.That(result.Succeeded, Is.True);
+            userManagerMock.Verify(x => x.UpdateAsync(user), Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateUserAsync_ReturnsFailure_WhenUpdateFails()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "testuser" };
+
+            userManagerMock.Setup(x => x.UpdateAsync(user))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Update failed" }));
+
+            var result = await userAuthService.UpdateUserAsync(user);
+
+            Assert.That(result.Succeeded, Is.False);
+        }
+
+
+
+        [Test]
+        public async Task GetUserByNameAsync_ReturnsUser_WhenUserExists()
+        {
+            var user = new ApplicationUser { UserName = "testuser" };
+
+            userManagerMock.Setup(x => x.FindByNameAsync("testuser")).ReturnsAsync(user);
+
+            var result = await userAuthService.GetUserByNameAsync("testuser");
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.UserName, Is.EqualTo("testuser"));
+        }
+
+        [Test]
+        public async Task GetUserByNameAsync_ReturnsNull_WhenUserNotFound()
+        {
+            userManagerMock.Setup(x => x.FindByNameAsync("testuser")).ReturnsAsync((ApplicationUser)null);
+
+            var result = await userAuthService.GetUserByNameAsync("testuser");
+
+            Assert.That(result, Is.Null);
+        }
+
+        [Test]
+        public async Task IsUserInRoleAsync_ReturnsTrue_WhenUserInRole()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid() };
+
+            userManagerMock.Setup(x => x.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
+            userManagerMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(true);
+
+            var result = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), "Admin");
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public async Task IsUserInRoleAsync_ReturnsFalse_WhenUserNotInRole()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid() };
+
+            userManagerMock.Setup(x => x.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
+            userManagerMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(false);
+
+            var result = await userAuthService.IsUserInRoleAsync(user.Id.ToString(), "Admin");
+
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public async Task RemoveRoleFromUserAsync_ReturnsSuccess_WhenRoleRemoved()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid() };
+
+            userManagerMock.Setup(x => x.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
+            userManagerMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(true);
+            userManagerMock.Setup(x => x.RemoveFromRoleAsync(user, "Admin")).ReturnsAsync(IdentityResult.Success);
+
+            var result = await userAuthService.RemoveRoleFromUserAsync(user.Id.ToString(), "Admin");
+
+            Assert.That(result.Succeeded, Is.True);
+        }
+
+        [Test]
+        public async Task RemoveRoleFromUserAsync_ReturnsFailure_WhenUserNotFound()
+        {
+            userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            var result = await userAuthService.RemoveRoleFromUserAsync("invalidId", "Admin");
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors.First().Description, Is.EqualTo(UserNotFound));
+        }
+
+        [Test]
+        public async Task RemoveRoleFromUserAsync_ReturnsFailure_WhenUserNotInRole()
+        {
+            var user = new ApplicationUser { Id = Guid.NewGuid() };
+
+            userManagerMock.Setup(x => x.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
+            userManagerMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(false);
+
+            var result = await userAuthService.RemoveRoleFromUserAsync(user.Id.ToString(), "Admin");
+
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Errors.First().Description, Is.EqualTo(UserIsNotInRole));
         }
         private static Mock<UserManager<ApplicationUser>> MockUserManager()
         {

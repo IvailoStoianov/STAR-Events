@@ -11,7 +11,6 @@
 <h3 class="text-center display-4 py-3 fw-bold">All Events</h3>
 
 <div class="container">
-    <!-- Filter Form -->
     <div class="row justify-content-center mb-4">
         <form method="get" asp-controller="Events" asp-action="All" class="col-lg-10">
             <div class="row">
@@ -49,14 +48,22 @@
             {
                 <div class="col-md-4 mb-4">
                     <a asp-controller="Events" asp-action="EventDetails" asp-route-id="@eventItem.EventId" class="text-decoration-none">
-                        <div class="card h-100">
+                        <div class="card h-100 shadow-sm">
                             <img src="@eventItem.ImageUrl" class="card-img-top" alt="@eventItem.Name" />
                             <div class="card-body">
-                                <h5 class="card-title">@eventItem.Name</h5>
+                                <h5 class="card-title fw-bold">@eventItem.Name</h5>
                                 <p class="card-text">@eventItem.Description</p>
-                                <p class="card-text"><small class="text-muted">@eventItem.StartDate.ToString("g") - @eventItem.EndDate.ToString("g")</small></p>
-                                <p class="card-text"><small class="text-muted">Category: @eventItem.Category.Name</small></p>
-                                <p class="card-text"><small class="text-muted">Capacity: @eventItem.Capacity</small></p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        @eventItem.StartDate.ToString("g") - @eventItem.EndDate.ToString("g")
+                                    </small>
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">Category: @eventItem.Category.Name</small>
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">Capacity: @eventItem.Capacity</small>
+                                </p>
                             </div>
                         </div>
                     </a>
@@ -64,20 +71,33 @@
             }
         </div>
 
-        <div class="pagination">
+        <div class="pagination justify-content-center mt-4">
             @if (Model.CurrentPage > 1)
             {
-                <a asp-action="All" asp-route-page="@(Model.CurrentPage - 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-selectedCategory="@Model.SelectedCategory" asp-route-sortOption="@Model.SortOption">Previous</a>
+                <a class="btn btn-outline-primary me-2" asp-action="All"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-searchTerm="@Model.SearchTerm"
+                   asp-route-selectedCategory="@Model.SelectedCategory"
+                   asp-route-sortOption="@Model.SortOption">Previous</a>
             }
 
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
-                <a asp-action="All" asp-route-page="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-selectedCategory="@Model.SelectedCategory" asp-route-sortOption="@Model.SortOption" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+                <a class="btn @(i == Model.CurrentPage ? "btn-primary" : "btn-outline-primary") me-2"
+                   asp-action="All"
+                   asp-route-page="@i"
+                   asp-route-searchTerm="@Model.SearchTerm"
+                   asp-route-selectedCategory="@Model.SelectedCategory"
+                   asp-route-sortOption="@Model.SortOption">@i</a>
             }
 
             @if (Model.CurrentPage < Model.TotalPages)
             {
-                <a asp-action="All" asp-route-page="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-selectedCategory="@Model.SelectedCategory" asp-route-sortOption="@Model.SortOption">Next</a>
+                <a class="btn btn-outline-primary ms-2" asp-action="All"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-searchTerm="@Model.SearchTerm"
+                   asp-route-selectedCategory="@Model.SelectedCategory"
+                   asp-route-sortOption="@Model.SortOption">Next</a>
             }
         </div>
     }

@@ -64,6 +64,10 @@ namespace STAREvents.Common
             public const int MaxProfilePictureSize = 100 * 1024; // 100 KB
             public const string DefaultProfilePictureUrl = "/images/default-pfp.svg";
         }
+        public static class NotificationConstants
+        {
+            public const int MaxContentLength = 500;
+        }
         public static class CommentConstants
         {
             public const int MaxContentLength = 1000;
@@ -91,6 +95,18 @@ namespace STAREvents.Common
         public static class ConfigurationConstants
         { 
             public const int MultipartBodyLengthLimitConstant = 104857600; // 100 MB
+        }
+        public static class CleanUpConstants
+        {
+            public const int CleanupIntervalInMins = 30;
+        }
+        public static class PageSizeConstants
+        {
+            public const int DefaultPageSize = 12;
+        }
+        public static class NotificationsConstants
+        {
+            public const int NotificationIntervalInMins = 30;
         }
     }
 }

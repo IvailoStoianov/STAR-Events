@@ -1,0 +1,83 @@
+﻿body {
+    background-color: #F7CF47;
+    font-family: Arial, sans-serif;
+}
+
+h2, h3 {
+    color: black;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.nav-tabs {
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+    .nav-tabs .nav-link {
+        color: black;
+        background-color: white;
+        border: 1px solid black;
+        margin: 0 5px;
+    }
+
+        .nav-tabs .nav-link.active {
+            color: white;
+            background-color: black;
+        }
+
+.table {
+    margin-top: 20px;
+    background-color: #F0F0F0; /* Lighter background color */
+    border: 1px solid black;
+}
+
+    .table th, .table td {
+        color: black;
+        border: 1px solid black;
+    }
+
+.btn-delete {
+    background-color: red;
+    border-color: red;
+    color: white;
+    margin: 0 5px;
+}
+
+.btn-recover {
+    background-color: blue;
+    border-color: blue;
+    color: white;
+    margin: 0 5px;
+}
+
+.statistics {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+    .statistics .stat-item {
+        background-color: white;
+        border: 1px solid black;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        width: 200px;
+    }
+
+        .statistics .stat-item h4 {
+            margin-bottom: 10px;
+            color: black;
+        }
+
+        .statistics .stat-item p {
+            font-size: 1.2em;
+            color: black;
+        }
+
+footer.not-full-height {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
