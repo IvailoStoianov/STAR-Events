@@ -7,13 +7,20 @@ Event Management System Banner
 
 📌 Overview
 A full-stack event management platform where users can:
+
 ✅ Organize events, join activities, and discuss via comments.
+
 ✅ Secure authentication/authorization using ASP.NET Identity roles (Admin/User).
+
 ✅ Admin dashboard for managing users, events, and content.
+
 ✅ Image storage via Azure Blob Storage (toggleable via app settings).
+
 ✅ Real-time notifications for event updates and interactions.
 
+
 🛠️ Technical Stack
+
 Backend: ASP.NET Core MVC, Entity Framework Core (Code-First), SQL Server (SSMS/T-SQL)
 
 Frontend: Razor Pages, Blazor Components, Bootstrap
@@ -24,7 +31,9 @@ Testing: NUnit, Moq (80% code coverage)
 
 Tools: AutoMapper, Azure Blob Storage (images), ASP.NET Identity
 
+
 🔥 Key Features
+
 Core Functionality
 CRUD Operations: Users create/join events; Admins manage users/events.
 
@@ -41,9 +50,12 @@ Unit Tests: Mocked dependencies using Moq, focused on auth/services.
 
 Scalable Design: Clean Architecture ensures separation of concerns.
 
-🧠 Challenges & Solutions 
+🧠 Challenges & Solutions
+
 Authentication/Testing Hurdles
+
 Problem: Mocking SignInManager/UserManager for unit tests was complex.
+
 Solution: Abstracted auth logic into an IAuthService interface, injected via DI. Enabled seamless mocking and cleaner test suites.
 
 Azure Blob Storage Integration
